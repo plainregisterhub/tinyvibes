@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#08111d">
+<title>TinyVibes — Liquid V5 Playtest</title>
+<style>
+:root{
+  --bg:#08111d;--panel:#0e1a2a;--panel2:#0a1422;--ink:#f7fbff;--muted:#9aabbe;
+  --line:rgba(255,255,255,.10);--accent:#78d9ff;--good:#82e7b1;--warn:#ffd764;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:
+  radial-gradient(circle at 50% -10%,#203d68 0,#0a1423 36%,#050a11 100%);
+  color:var(--ink);font-family:ui-rounded,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{overflow-x:hidden}
+button,input{font:inherit}
+.app{max-width:1500px;margin:0 auto;padding:14px 14px 34px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.brand{display:flex;align-items:center;gap:10px}.mark{width:42px;height:42px;border-radius:14px;
+  display:grid;place-items:center;background:linear-gradient(145deg,#edfaff,#74d8ff 58%,#4c90ff);
+  box-shadow:0 10px 24px rgba(53,174,255,.20);font-size:20px}
+h1{margin:0;font-size:24px;line-height:1}.sub{margin-top:4px;color:var(--muted);font-size:11px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:rgba(255,255,255,.05);
+  color:var(--ink);padding:9px 12px;border-radius:999px;font-size:11px;font-weight:900}
+.btn.hot{background:#ffd64d;color:#1b1708;border-color:#ffd64d}
+.layout{display:grid;grid-template-columns:360px minmax(0,1fr);gap:12px;align-items:start}
+.panel,.stage{background:linear-gradient(180deg,rgba(15,26,43,.97),rgba(8,16,28,.97));
+  border:1px solid var(--line);border-radius:20px;box-shadow:0 18px 60px rgba(0,0,0,.24)}
+.panel{padding:12px}.stage{padding:12px}
+.search{width:100%;height:42px;border:1px solid var(--line);background:rgba(255,255,255,.05);
+  color:#fff;border-radius:12px;padding:0 12px;outline:0}.search::placeholder{color:#77879b}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.pill{border:1px solid var(--line);background:rgba(255,255,255,.04);
+  color:#dce7f3;padding:7px 9px;border-radius:999px;font-size:9px;font-weight:900;cursor:pointer}
+.pill.active{background:#fff;color:#101720}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;max-height:72vh;overflow:auto;padding-right:2px}
+.card{position:relative;border:1px solid var(--line);border-radius:13px;padding:6px;background:rgba(255,255,255,.035);
+  color:inherit;cursor:pointer;transition:transform .12s,border-color .12s,box-shadow .12s}
+.card:active{transform:scale(.97)}.card.active{border-color:#6fd7ff;box-shadow:0 0 0 2px rgba(111,215,255,.11)}
+.card.basic .tier{background:rgba(255,255,255,.08)}.card.entry .tier{background:rgba(84,190,255,.12);color:#bdeeff}
+.card.premium .tier{background:rgba(255,190,77,.13);color:#ffe3a5}.card.legendary .tier{background:rgba(190,116,255,.14);color:#ebd2ff}
+.thumb{aspect-ratio:1;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));
+  display:grid;place-items:center;overflow:hidden}.thumb img{width:86%;height:86%;object-fit:contain;display:block}
+.tier{position:absolute;left:9px;top:9px;padding:3px 5px;border-radius:6px;font-size:7px;font-weight:1000;border:1px solid var(--line)}
+.cname{margin-top:5px;font-size:10px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meta{display:flex;justify-content:space-between;gap:5px;color:#aab8ca;font-size:8px;margin-top:2px}.price{color:#dce7f3;font-weight:900}
+.hint{margin-top:10px;padding:10px 11px;border-radius:11px;background:rgba(255,255,255,.045);color:#c5d0de;font-size:10px;line-height:1.35}
+.stageHead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}.stageTitle{font-weight:1000;font-size:13px}
+.legend{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.legend span{font-size:8px;color:#afbdd0;padding:5px 7px;border:1px solid var(--line);border-radius:999px}
+.worldWrap{display:flex;justify-content:center;align-items:center;min-height:0;padding:8px}
+.planetScene{position:relative;width:min(100%,840px);max-width:840px;aspect-ratio:1;touch-action:none;overflow:visible}
+.planetShell{position:absolute;inset:0;border-radius:50%;
+  background:
+    radial-gradient(circle at 34% 27%,rgba(255,255,255,.92),rgba(255,255,255,.78) 26%,rgba(247,244,234,.97) 62%,rgba(218,214,201,.96) 100%);
+  box-shadow:inset -26px -32px 70px rgba(70,58,36,.12),0 24px 60px rgba(0,0,0,.26);
+  overflow:hidden}
+.surfaceLayer{position:absolute;inset:0;border-radius:50%;overflow:hidden;pointer-events:none;isolation:isolate}
+.objectLayer{position:absolute;inset:0;pointer-events:none;z-index:10}
+.placed{position:absolute;pointer-events:auto;touch-action:none;transform-origin:center;will-change:transform,left,top;
+  user-select:none;-webkit-user-select:none;z-index:20}
+.placed img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 10px 10px rgba(0,0,0,.12))}
+.placed.selected img{filter:drop-shadow(0 10px 10px rgba(0,0,0,.12)) drop-shadow(0 0 8px rgba(120,217,255,.35))}
+.placed.pop{animation:land .34s cubic-bezier(.2,.9,.2,1)}
+@keyframes land{0%{transform:translate(-50%,-50%) scale(.72) rotate(var(--rot,0deg));opacity:.2}
+ 70%{transform:translate(-50%,-50%) scale(1.06) rotate(var(--rot,0deg));opacity:1}
+ 100%{transform:translate(-50%,-50%) scale(1) rotate(var(--rot,0deg));opacity:1}}
+.surfaceFx{position:absolute;transform:translate(-50%,-50%);pointer-events:none;z-index:1;will-change:left,top}
+.surfaceBlob{position:absolute;inset:0;border-radius:52% 48% 62% 38% / 44% 58% 42% 56%;
+  background:
+    radial-gradient(ellipse at 34% 26%,rgba(255,255,255,.28),transparent 24%),
+    linear-gradient(110deg,var(--c0) 0%,var(--c1) 45%,var(--c0) 100%);
+  opacity:var(--op,.22);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.20),inset 0 -8px 16px rgba(0,0,0,.05);
+  animation:morph 8.5s ease-in-out infinite, drift 7.5s ease-in-out infinite}
+.surfaceBlob::after{content:"";position:absolute;inset:12% 10%;border-radius:inherit;
+  background:linear-gradient(140deg,transparent 20%,rgba(255,255,255,.13) 46%,transparent 70%);
+  transform:translateX(-15%);animation:sweep 6s linear infinite;opacity:.65}
+.surfaceWave{position:absolute;inset:12%;border-radius:inherit;
+  background:repeating-radial-gradient(ellipse at 44% 46%,rgba(255,255,255,.16) 0 1.5px,transparent 2.5px 14px);
+  mask-image:radial-gradient(ellipse at center,black 22%,transparent 84%);opacity:.55;
+  animation:ripple 4.8s ease-in-out infinite}
+.surfaceWave.w2{inset:24%;opacity:.28;animation-duration:7.4s;animation-delay:-1.4s}
+@keyframes morph{0%,100%{border-radius:58% 42% 55% 45% / 46% 56% 44% 54%}
+ 33%{border-radius:46% 54% 44% 56% / 57% 45% 55% 43%}
+ 68%{border-radius:61% 39% 48% 52% / 42% 59% 41% 58%}}
+@keyframes drift{0%,100%{transform:translate(0,0) rotate(-2deg) scale(1)}
+ 50%{transform:translate(2.5%,1.5%) rotate(3deg) scale(1.018)}}
+@keyframes sweep{0%{transform:translateX(-22%)}100%{transform:translateX(22%)}}
+@keyframes ripple{0%,100%{transform:scale(.94);opacity:.35}50%{transform:scale(1.04);opacity:.60}}
+.spark{position:absolute;width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.7);
+  box-shadow:0 0 10px rgba(255,255,255,.45);animation:float 3.2s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translate(0,5px);opacity:.15}50%{transform:translate(2px,-5px);opacity:.65}}
+.edgeRing{position:absolute;inset:-1px;border-radius:50%;border:1px dashed rgba(255,255,255,.12);pointer-events:none;z-index:8}
+.bump{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;z-index:3;
+  border:2px solid rgba(255,255,255,.35);animation:bump .42s ease-out forwards}
+@keyframes bump{0%{width:12px;height:12px;opacity:.8}100%{width:120px;height:120px;opacity:0}}
+.bottomRow{display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px solid var(--line);margin-top:10px;padding-top:10px}
+.statusStrong{font-size:11px;font-weight:1000}.statusSmall{font-size:9px;color:#9eacbf;margin-top:2px}.remove{border:1px solid var(--line);background:rgba(255,255,255,.05);color:#fff;
+  padding:8px 10px;border-radius:999px;font-size:10px;font-weight:1000}
+@media(min-width:1200px){
+  .grid{max-height:78vh}
+  .planetScene{width:min(100%,900px)}
+}
+@media(max-width:980px){.layout{grid-template-columns:1fr}.grid{max-height:none}.panel{order:2}.stage{order:1}.planetScene{width:min(100%,680px)}}
+@media(max-width:560px){.app{padding:8px}.top{align-items:flex-start}.actions{max-width:160px;justify-content:flex-end}.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.planetScene{width:100%;max-width:390px}.worldWrap{padding:4px}.legend{display:none}.bottomRow{align-items:flex-start}.remove{font-size:9px}.stage{padding:9px}.sub{max-width:240px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand"><div class="mark">🪐</div><div><h1>TinyVibes</h1><div class="sub">Liquid V5 — planet-surface liquid · responsive scale · tap rotate · drag move</div></div></div>
+    <div class="actions"><button class="btn hot" id="test20">20 Cup Test</button><button class="btn" id="clearBtn">Clear</button></div>
+  </header>
+
+  <main class="layout">
+    <aside class="panel">
+      <input class="search" id="search" placeholder="Search liquid assets..." />
+      <div class="filters" id="filters"></div>
+      <div class="grid" id="grid"></div>
+      <div class="hint" id="hint">Tap an asset, then tap the planet once. After placement: tap the object to rotate +15°, drag to move.</div>
+    </aside>
+
+    <section class="stage">
+      <div class="stageHead">
+        <div class="stageTitle">Tiny Planet</div>
+        <div class="legend">
+          <span>Basic · smallest</span><span>Entry · small</span><span>Premium · medium</span><span>Legendary · hero</span>
+        </div>
+      </div>
+
+      <div class="worldWrap">
+        <div class="planetScene" id="scene" aria-label="Tiny Planet">
+          <div class="planetShell" id="planetShell">
+            <div class="surfaceLayer" id="surfaceLayer"></div>
+          </div>
+          <div class="objectLayer" id="objectLayer"></div>
+          <div class="edgeRing"></div>
+        </div>
+      </div>
+
+      <div class="bottomRow">
+        <div><div class="statusStrong" id="count">0 placed</div><div class="statusSmall">Liquid stays inside planet shape · objects may gently overflow the boundary.</div></div>
+        <button class="remove" id="removeBtn">No selection</button>
+      </div>
+      <div class="bottomRow" style="margin-top:6px;border-top:0;padding-top:0">
+        <div><div class="statusStrong" id="selectedName">No asset selected</div><div class="statusSmall" id="selectedMeta">Choose an asset to begin.</div></div>
+        <div class="statusSmall">☝ Place · ☝ Tap object = rotate · ✋ Drag = move</div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+const state={assets:[],filter:'ALL',query:'',armed:null,selected:null,items:[],drag:null,seq:0};
+const TIER={
+  'Basic':{rank:0,obj:.105,fx:.17,op:.15,speed:10.5},
+  'Premium Entry':{rank:1,obj:.13,fx:.20,op:.17,speed:9.0},
+  'Premium':{rank:2,obj:.165,fx:.24,op:.19,speed:7.2},
+  'Legendary':{rank:3,obj:.21,fx:.28,op:.21,speed:5.6}
+};
+const COLORS={
+  'MINERAL WATER':['rgba(115,180,220,.24)','rgba(195,225,244,.34)'],
+  'MATCHA':['rgba(116,162,79,.22)','rgba(178,208,125,.32)'],
+  'MILK TEA':['rgba(153,103,62,.22)','rgba(203,151,104,.30)'],
+  'BLUE SODA':['rgba(55,142,219,.23)','rgba(113,192,241,.34)'],
+  'DARK SODA':['rgba(91,63,47,.22)','rgba(137,98,73,.30)'],
+  'LEMONADE':['rgba(210,176,59,.22)','rgba(244,213,108,.34)'],
+  'STRAWBERRY MILK':['rgba(221,116,143,.20)','rgba(243,172,188,.30)'],
+  'CHOCOLATE':['rgba(123,77,44,.23)','rgba(183,126,82,.31)'],
+  'BERRY':['rgba(188,72,113,.21)','rgba(231,126,165,.31)'],
+  'MAGIC POTION':['rgba(128,83,199,.22)','rgba(201,119,245,.32)']
+};
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+const byTier=(a,b)=>(TIER[a.tier]?.rank??9)-(TIER[b.tier]?.rank??9)||a.id.localeCompare(b.id);
+const $=id=>document.getElementById(id);
+const scene=$('scene'), surfaceLayer=$('surfaceLayer'), objectLayer=$('objectLayer');
+
+async function load(){
+  const res=await fetch('data/liquid-manifest.json',{cache:'no-store'});
+  const data=await res.json();
+  state.assets=data.assets.map(a=>({...a,src:'assets/liquid/'+a.filename})).sort(byTier);
+  buildFilters();renderGrid();syncStatus();
+}
+function buildFilters(){
+  const fam=[...new Set(state.assets.map(a=>a.family))];
+  $('filters').innerHTML=['ALL',...fam].map(f=>`<button class="pill ${state.filter===f?'active':''}" data-f="${esc(f)}">${esc(f)}</button>`).join('');
+  $('filters').querySelectorAll('[data-f]').forEach(b=>b.addEventListener('click',()=>{state.filter=b.dataset.f;buildFilters();renderGrid()}));
+}
+function visible(){
+  const q=state.query.toLowerCase().trim();
+  return state.assets.filter(a=>(state.filter==='ALL'||a.family===state.filter)&&(!q||(a.name+' '+a.id+' '+a.tier+' '+a.family).toLowerCase().includes(q))).sort(byTier);
+}
+function tierClass(t){return t==='Basic'?'basic':t==='Premium Entry'?'entry':t==='Premium'?'premium':'legendary'}
+function renderGrid(){
+  $('grid').innerHTML=visible().map(a=>`<button class="card ${state.armed?.id===a.id?'active':''} ${tierClass(a.tier)}" data-id="${a.id}">
+    <div class="tier">${esc(a.tier)}</div>
+    <div class="thumb"><img src="${esc(a.src)}" alt="${esc(a.name)}" loading="lazy"></div>
+    <div class="cname">${esc(a.name)}</div>
+    <div class="meta"><span>${esc(a.family)}</span><span class="price">${esc(a.priceLabel)}</span></div>
+    <div class="meta"><span>${esc(a.sizeClass)}</span><span>${a.id}</span></div>
+  </button>`).join('');
+  $('grid').querySelectorAll('[data-id]').forEach(b=>b.addEventListener('click',()=>{
+    const a=state.assets.find(x=>x.id===b.dataset.id);state.armed=a;state.selected=null;
+    $('hint').textContent=`${a.name} armed · tap the planet to place it.`;
+    renderGrid();syncStatus();
+  }));
+}
+function normPos(clientX,clientY){
+  const r=scene.getBoundingClientRect();
+  return {x:(clientX-r.left)/r.width,y:(clientY-r.top)/r.height};
+}
+function clamp01(v,min,max){return Math.max(min,Math.min(max,v))}
+function objectPx(asset){
+  const r=scene.getBoundingClientRect();
+  const ratio=TIER[asset.tier]?.obj??.11;
+  return Math.max(34,Math.round(r.width*ratio));
+}
+function fxPx(asset){
+  const r=scene.getBoundingClientRect();
+  const ratio=TIER[asset.tier]?.fx??.18;
+  return Math.max(70,Math.round(r.width*ratio));
+}
+function place(asset,pos,opts={}){
+  const id=++state.seq;
+  const tier=TIER[asset.tier]||TIER.Basic;
+  const size=objectPx(asset);
+  const fxSize=fxPx(asset);
+  const [c0,c1]=COLORS[asset.family]||COLORS['MINERAL WATER'];
+  const item={id,asset,x:clamp01(pos.x,-.04,1.04),y:clamp01(pos.y,-.04,1.04),rot:opts.rot||0,node:null,fx:null,dragging:false};
+  const fx=document.createElement('div');
+  fx.className='surfaceFx';
+  fx.style.width=fxSize+'px';fx.style.height=(fxSize*.72)+'px';
+  fx.style.left=(item.x*100)+'%';fx.style.top=(item.y*100)+'%';
+  fx.style.setProperty('--c0',c0);fx.style.setProperty('--c1',c1);fx.style.setProperty('--op',tier.op);
+  fx.style.animationDuration=`${tier.speed}s,${Math.max(5.6,tier.speed-1.2)}s`;
+  fx.innerHTML='<div class="surfaceBlob"></div><div class="surfaceWave"></div><div class="surfaceWave w2"></div>';
+  for(let i=0;i<3;i++){const s=document.createElement('div');s.className='spark';s.style.left=(26+i*23)+'%';s.style.top=(25+(i%2)*35)+'%';s.style.animationDelay=(-i*.8)+'s';fx.appendChild(s)}
+  surfaceLayer.appendChild(fx);item.fx=fx;
+
+  const obj=document.createElement('div');obj.className='placed pop';obj.style.width=size+'px';obj.style.height=size+'px';
+  obj.style.left=(item.x*100)+'%';obj.style.top=(item.y*100)+'%';obj.style.setProperty('--rot',item.rot+'deg');
+  obj.innerHTML=`<img src="${esc(asset.src)}" alt="${esc(asset.name)}" draggable="false">`;
+  objectLayer.appendChild(obj);item.node=obj;
+  bindObject(item);
+  state.items.push(item);setSelected(item);
+  setTimeout(()=>obj.classList.remove('pop'),360);syncStatus();
+}
+function setSelected(item){
+  if(state.selected?.node)state.selected.node.classList.remove('selected');
+  state.selected=item;if(item?.node)item.node.classList.add('selected');
+  syncStatus();
+}
+function rotate(item){
+  item.rot=(item.rot+15)%360;
+  item.node.style.setProperty('--rot',item.rot+'deg');
+  item.node.animate([
+    {transform:`translate(-50%,-50%) scale(1) rotate(${item.rot-15}deg)`},
+    {transform:`translate(-50%,-50%) scale(1.045) rotate(${item.rot}deg)`},
+    {transform:`translate(-50%,-50%) scale(1) rotate(${item.rot}deg)`}
+  ],{duration:180,easing:'ease-out'});
+  $('hint').textContent=`${item.asset.name} rotated to ${item.rot}°.`;
+  setSelected(item);
+}
+function bindObject(item){
+  let sx=0,sy=0,moved=false,activePointer=null;
+  item.node.addEventListener('pointerdown',e=>{
+    e.stopPropagation();
+    activePointer=e.pointerId;
+    sx=e.clientX;sy=e.clientY;moved=false;item.dragging=true;
+    item.node.setPointerCapture?.(e.pointerId);
+    setSelected(item);
+  });
+  item.node.addEventListener('pointermove',e=>{
+    if(!item.dragging || e.pointerId!==activePointer)return;
+    const dx=e.clientX-sx,dy=e.clientY-sy;
+    if(Math.hypot(dx,dy)>8)moved=true;
+    if(!moved)return;
+    const p=normPos(e.clientX,e.clientY);
+    item.x=clamp01(p.x,-.07,1.07);
+    item.y=clamp01(p.y,-.07,1.07);
+    item.node.style.left=(item.x*100)+'%';
+    item.node.style.top=(item.y*100)+'%';
+    item.fx.style.left=(item.x*100)+'%';
+    item.fx.style.top=(item.y*100)+'%';
+  });
+  item.node.addEventListener('pointerup',e=>{
+    if(e.pointerId!==activePointer)return;
+    item.dragging=false;
+    activePointer=null;
+    item.node.releasePointerCapture?.(e.pointerId);
+    if(!moved){
+      rotate(item);
+    }
+  });
+  item.node.addEventListener('pointercancel',e=>{
+    if(e.pointerId!==activePointer)return;
+    item.dragging=false;activePointer=null;
+  });
+}
+planetShell.addEventListener('pointerup',e=>{
+  if(!state.armed)return;
+  if(e.target.closest('.placed'))return;
+  const p=normPos(e.clientX,e.clientY);
+  place(state.armed,p);
+  state.armed=null;
+  renderGrid();
+  syncStatus();
+});
+$('removeBtn').addEventListener('click',()=>{
+  if(!state.selected)return;
+  state.selected.node.remove();state.selected.fx.remove();
+  state.items=state.items.filter(x=>x!==state.selected);state.selected=null;syncStatus();
+});
+$('clearBtn').addEventListener('click',()=>{
+  objectLayer.innerHTML='';surfaceLayer.innerHTML='';state.items=[];state.selected=null;syncStatus();$('hint').textContent='Cleared. Choose an asset to begin.';
+});
+$('search').addEventListener('input',e=>{state.query=e.target.value;renderGrid()});
+$('test20').addEventListener('click',()=>{
+  objectLayer.innerHTML='';surfaceLayer.innerHTML='';state.items=[];state.selected=null;
+  const picks=['MCH-004','MCH-003','MCH-002','MTB-002','BSD-002','BSD-003','LEM-002','STM-002','CHO-002','BER-002','POT-001','POT-002','POT-003','SOD-002','MCH-001','MTB-001','BSD-001','SOD-001','LEM-001','BER-001'];
+  const cols=5,rows=4;
+  picks.forEach((id,i)=>{
+    const a=state.assets.find(x=>x.id===id);if(!a)return;
+    const x=.12+(i%cols)*.19;const y=.14+Math.floor(i/cols)*.24;
+    place(a,{x,y},{rot:(i%4)*15});
+  });
+  $('hint').textContent='20-cup test · inspect coverage, overlap, touch, rotation and responsive scale.';
+});
+window.addEventListener('resize',()=>state.items.forEach(it=>{
+  const size=objectPx(it.asset),fx=fxPx(it.asset);it.node.style.width=size+'px';it.node.style.height=size+'px';
+  it.fx.style.width=fx+'px';it.fx.style.height=(fx*.72)+'px';
+}));
+function syncStatus(){
+  $('count').textContent=`${state.items.length} placed`;
+  if(state.selected){
+    $('selectedName').textContent=`Placed: ${state.selected.asset.name}`;
+    $('selectedMeta').textContent=`${state.selected.asset.tier} · ${state.selected.asset.sizeClass} · ${state.selected.rot}°`;
+    $('removeBtn').textContent='Remove selected';
+  }else if(state.armed){
+    $('selectedName').textContent=`Armed: ${state.armed.name}`;
+    $('selectedMeta').textContent=`${state.armed.tier} · ${state.armed.sizeClass} · tap planet to place`;
+    $('removeBtn').textContent='No selection';
+  }else{
+    $('selectedName').textContent='No asset selected';
+    $('selectedMeta').textContent='Choose an asset to begin.';
+    $('removeBtn').textContent='No selection';
+  }
+}
+load().catch(err=>{
+  console.error(err);
+  $('hint').textContent='Could not load the Liquid V1 manifest. Check that data/liquid-manifest.json and assets/liquid/ are in the same GitHub repo.';
+});
+</script>
+</body>
+</html>
