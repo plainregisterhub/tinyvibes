@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>TinyVibes — Organic Surface Goo V6.4</title>
+<style>
+:root{--bg:#071425;--bg2:#0b1d33;--ink:#f5f8ff;--muted:#9db0c9;--line:rgba(255,255,255,.10);--glass:rgba(8,20,37,.80);--accent:#a8dcff;--shadow:0 20px 60px rgba(0,0,0,.34)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:radial-gradient(circle at 20% 0%,rgba(96,157,230,.12),transparent 28%),radial-gradient(circle at 90% 20%,rgba(78,118,190,.10),transparent 32%),var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+body{overflow-x:hidden}.app{width:min(1180px,100%);margin:auto;padding:16px 16px 26px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.brand{display:flex;align-items:center;gap:10px}.logo{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(145deg,#92d8ff,#78a9ef);font-size:21px;box-shadow:0 10px 28px rgba(60,130,210,.25)}.brand h1{margin:0;font-size:24px;line-height:1}.brand p{margin:4px 0 0;color:var(--muted);font-size:12px}.badge{border:1px solid rgba(170,220,255,.25);background:rgba(90,146,216,.17);padding:9px 12px;border-radius:999px;font-size:11px;font-weight:800}.scene{display:grid;grid-template-columns:minmax(0,1.24fr) minmax(320px,.76fr);gap:16px}.panel{border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.018));border-radius:24px;box-shadow:var(--shadow)}.planetPanel{padding:15px;display:flex;flex-direction:column;min-height:640px}.head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px}.head h2,.libHead h3{margin:0;font-size:15px}.head span,.count{color:var(--muted);font-size:10px}.planetStage{position:relative;width:min(100%,760px);aspect-ratio:1/1;margin:auto;min-height:300px;touch-action:none;isolation:isolate}.webgl{position:absolute;inset:0;width:100%;height:100%;display:block}.hint{text-align:center;color:var(--muted);font-size:10px;line-height:1.4;margin-top:7px}.hint b{color:#e0ecfb}.legend{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;color:#91a5bc;font-size:9px;margin-top:9px}.legend span{display:inline-flex;align-items:center;gap:5px}.dot{width:7px;height:7px;border-radius:50%;display:inline-block}.dev{margin-top:auto;align-self:flex-end;border:1px solid var(--line);background:rgba(255,255,255,.04);color:#b9c8d9;padding:7px 10px;border-radius:999px;font-size:10px}.devPanel{display:none;margin-top:9px;padding-top:10px;border-top:1px solid var(--line)}.devPanel.open{display:block}.devGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.devGrid button{border:1px solid var(--line);background:rgba(255,255,255,.04);color:#d8e4f1;padding:7px 4px;border-radius:10px;font-size:9px}.devMeta{font-size:9px;color:#7f93aa;margin-top:8px;line-height:1.4}.library{padding:14px;min-height:640px;display:flex;flex-direction:column}.libHead{display:flex;align-items:end;justify-content:space-between;gap:10px;margin-bottom:11px}.tabs{display:flex;gap:7px;overflow:auto;padding-bottom:2px;margin-bottom:10px}.tabs button{border:1px solid var(--line);background:rgba(255,255,255,.035);color:#b8c8db;padding:7px 10px;border-radius:999px;font-size:10px;flex:0 0 auto}.tabs button.active{background:rgba(168,220,255,.14);color:#f4fbff;border-color:rgba(168,220,255,.35)}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;overflow:auto;padding-right:2px}.card{border:1px solid var(--line);background:rgba(255,255,255,.022);border-radius:16px;padding:8px;display:grid;grid-template-columns:58px 1fr;gap:8px;align-items:center;text-align:left;color:inherit;min-width:0;transition:.15s}.card.armed{border-color:rgba(168,220,255,.55);box-shadow:0 0 0 2px rgba(168,220,255,.08)}.card:active{transform:scale(.985)}.thumb{width:58px;height:58px;border-radius:13px;overflow:hidden;background:rgba(255,255,255,.05);display:grid;place-items:center}.thumb img{width:100%;height:100%;object-fit:contain}.cardName{font-size:10px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cardSub{font-size:8.5px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chips{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}.chip{font-size:7.5px;border:1px solid rgba(255,255,255,.09);padding:2px 5px;border-radius:999px;color:#adc0d5}.chip.tier{color:#def0ff}.toast{position:fixed;left:50%;bottom:17px;transform:translateX(-50%) translateY(14px);background:rgba(7,17,30,.94);border:1px solid rgba(255,255,255,.12);color:#eef7ff;padding:9px 12px;border-radius:999px;font-size:11px;opacity:0;pointer-events:none;transition:.22s;z-index:50}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:900px){.scene{grid-template-columns:1fr}.planetPanel,.library{min-height:0}.planetPanel{padding-bottom:11px}.library{min-height:unset}.planetStage{width:min(96vw,720px)}.cards{max-height:420px}}
+@media(max-width:520px){.app{padding:11px 9px 20px}.topbar{margin-bottom:10px}.brand h1{font-size:21px}.brand p{font-size:11px}.logo{width:38px;height:38px}.badge{font-size:10px;padding:8px 10px}.panel{border-radius:20px}.planetPanel{padding:10px}.planetStage{width:min(96vw,430px)}.cards{grid-template-columns:1fr;max-height:none}.card{grid-template-columns:64px 1fr}.thumb{width:64px;height:64px}.devGrid{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar"><div class="brand"><div class="logo">🪐</div><div><h1>TinyVibes</h1><p>Build your little world.</p></div></div><div class="badge">Organic Goo V6.4</div></header>
+<main class="scene">
+<section class="panel planetPanel">
+<div class="head"><h2>Your little world</h2><span id="statusText">0 objects</span></div>
+<div id="planetStage" class="planetStage" aria-label="TinyVibes planet"></div>
+<div class="hint"><b>Tap a card</b> → tap planet once · <b>tap object</b> → rotate +15° · <b>drag</b> → move</div>
+<div class="legend"><span><i class="dot" style="background:#8bc8f4"></i>water</span><span><i class="dot" style="background:#83bf4f"></i>matcha</span><span><i class="dot" style="background:#b57a5d"></i>milk tea</span><span><i class="dot" style="background:#63bed7"></i>soda</span><span><i class="dot" style="background:#d76892"></i>berry</span></div>
+<button id="devToggle" class="dev">DEV</button>
+<div id="devPanel" class="devPanel"><div class="devGrid">
+<button data-preset="clear">Clear</button><button data-preset="1">1 Cup</button><button data-preset="5">5 Cups</button><button data-preset="10">10 Cups</button>
+<button data-preset="20x">20 Mixed</button><button data-preset="edge">Edge</button><button data-preset="rotate">Rotate</button><button data-preset="drag">Drag</button>
+<button data-preset="density">Density 60</button><button data-preset="reset">Reset Saved</button>
+</div><div id="devMeta" class="devMeta">State: fresh · Goo: idle · Interaction: ready</div></div>
+</section>
+<aside class="panel library">
+<div class="libHead"><h3>Liquid Collection</h3><span id="countText" class="count">25 assets</span></div>
+<div class="tabs" id="tabs"><button class="active" data-filter="ALL">All</button><button data-filter="FREE">Free</button><button data-filter="PREMIUM">Premium</button><button data-filter="LEGENDARY">Legendary</button></div>
+<div id="cards" class="cards"></div>
+</aside>
+</main></div><div id="toast" class="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+'use strict';
+const MANIFEST = {"project":"TinyVibes","system":"Liquid V1","version":"1.0.0","asset_count":25,"description":"Production data manifest for TinyVibes Liquid V1.","rules":{"planet":"fixed_visual_canvas","liquid_role":"local_surface_effect","physics":false,"mixing":true,"edge_bleed":true,"source_artwork_contains_effect":false},"assets":[{"id":"MW-001","name":"Mineral Water","label":"Mineral Water","filename":"mw-001-mineral-water.webp","family":"MINERAL WATER","tier":"Basic","priceRM":0,"priceLabel":"FREE","effectId":"mineral_water","type":"grounded","sizeClass":"small","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"MCH-001","name":"Matcha Classic","label":"Matcha Classic","filename":"mch-001-matcha-classic.webp","family":"MATCHA","tier":"Basic","priceRM":0,"priceLabel":"FREE","effectId":"none","type":"grounded","sizeClass":"small","repeatable":true,"animation":false,"status":"LOCKED","version":"1.0"},{"id":"MCH-002","name":"Matcha Stream","label":"Matcha Stream","filename":"mch-002-matcha-stream.webp","family":"MATCHA","tier":"Premium Entry","priceRM":0,"priceLabel":"FREE","effectId":"matcha_liquid","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"MCH-003","name":"Matcha Deluxe","label":"Matcha Deluxe","filename":"mch-003-matcha-deluxe.webp","family":"MATCHA","tier":"Premium","priceRM":1.39,"priceLabel":"RM1.39","effectId":"matcha_liquid","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"MCH-004","name":"Matcha Legendary","label":"Matcha Legendary","filename":"mch-004-matcha-legendary.webp","family":"MATCHA","tier":"Legendary","priceRM":4.9,"priceLabel":"RM4.90","effectId":"matcha_signature","type":"grounded","sizeClass":"hero","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"MTB-001","name":"Milk Tea Classic","label":"Milk Tea Classic","filename":"mtb-001-milk-tea-classic.webp","family":"MILK TEA","tier":"Basic","priceRM":0,"priceLabel":"FREE","effectId":"none","type":"grounded","sizeClass":"small","repeatable":true,"animation":false,"status":"LOCKED","version":"1.0"},{"id":"MTB-002","name":"Boba Stream","label":"Boba Stream","filename":"mtb-002-boba-stream.webp","family":"MILK TEA","tier":"Premium Entry","priceRM":0.59,"priceLabel":"RM0.59","effectId":"milk_tea_liquid","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"MTB-003","name":"Brown Sugar Milk Tea","label":"Brown Sugar Milk Tea","filename":"mtb-003-brown-sugar-milk-tea.webp","family":"MILK TEA","tier":"Premium","priceRM":1.39,"priceLabel":"RM1.39","effectId":"milk_tea_rich","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"BSD-001","name":"Blue Soda Classic","label":"Blue Soda Classic","filename":"bsd-001-blue-soda-classic.webp","family":"BLUE SODA","tier":"Basic","priceRM":0,"priceLabel":"FREE","effectId":"none","type":"grounded","sizeClass":"small","repeatable":true,"animation":false,"status":"LOCKED","version":"1.0"},{"id":"BSD-002","name":"Bubble Stream","label":"Bubble Stream","filename":"bsd-002-bubble-stream.webp","family":"BLUE SODA","tier":"Premium Entry","priceRM":0.59,"priceLabel":"RM0.59","effectId":"blue_soda_bubbles","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"BSD-003","name":"Neon Blue Pop","label":"Neon Blue Pop","filename":"bsd-003-neon-blue-pop.webp","family":"BLUE SODA","tier":"Premium","priceRM":1.39,"priceLabel":"RM1.39","effectId":"blue_soda_rich","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"REVISION","version":"1.0"},{"id":"BSD-004","name":"Blue Soda Signature","label":"Blue Soda Signature","filename":"bsd-004-blue-soda-signature.webp","family":"BLUE SODA","tier":"Legendary","priceRM":4.9,"priceLabel":"RM4.90","effectId":"blue_soda_signature","type":"grounded","sizeClass":"hero","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"SOD-001","name":"Dark Soda","label":"Dark Soda","filename":"sod-001-dark-soda.webp","family":"DARK SODA","tier":"Basic","priceRM":0,"priceLabel":"FREE","effectId":"none","type":"grounded","sizeClass":"small","repeatable":true,"animation":false,"status":"LOCKED","version":"1.0"},{"id":"SOD-002","name":"Fizzy Dark Soda","label":"Fizzy Dark Soda","filename":"sod-002-fizzy-dark-soda.webp","family":"DARK SODA","tier":"Premium Entry","priceRM":0.59,"priceLabel":"RM0.59","effectId":"dark_soda_fizz","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"LEM-001","name":"Lemonade Classic","label":"Lemonade Classic","filename":"lem-001-lemonade-classic.webp","family":"LEMONADE","tier":"Basic","priceRM":0,"priceLabel":"FREE","effectId":"none","type":"grounded","sizeClass":"small","repeatable":true,"animation":false,"status":"LOCKED","version":"1.0"},{"id":"LEM-002","name":"Sparkling Lemonade","label":"Sparkling Lemonade","filename":"lem-002-sparkling-lemonade.webp","family":"LEMONADE","tier":"Premium Entry","priceRM":0.59,"priceLabel":"RM0.59","effectId":"lemonade_sparkle","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"STM-001","name":"Strawberry Milk","label":"Strawberry Milk","filename":"stm-001-strawberry-milk.webp","family":"STRAWBERRY MILK","tier":"Basic","priceRM":0,"priceLabel":"FREE","effectId":"none","type":"grounded","sizeClass":"small","repeatable":true,"animation":false,"status":"LOCKED","version":"1.0"},{"id":"STM-002","name":"Strawberry Cream","label":"Strawberry Cream","filename":"stm-002-strawberry-cream.webp","family":"STRAWBERRY MILK","tier":"Premium","priceRM":1.39,"priceLabel":"RM1.39","effectId":"strawberry_cream","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"CHO-001","name":"Chocolate Drink","label":"Chocolate Drink","filename":"cho-001-chocolate-drink.webp","family":"CHOCOLATE","tier":"Basic","priceRM":0,"priceLabel":"FREE","effectId":"none","type":"grounded","sizeClass":"small","repeatable":true,"animation":false,"status":"LOCKED","version":"1.0"},{"id":"CHO-002","name":"Chocolate Melt","label":"Chocolate Melt","filename":"cho-002-chocolate-melt.webp","family":"CHOCOLATE","tier":"Premium","priceRM":1.39,"priceLabel":"RM1.39","effectId":"chocolate_melt","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"BER-001","name":"Berry Juice","label":"Berry Juice","filename":"ber-001-berry-juice.webp","family":"BERRY","tier":"Basic","priceRM":0,"priceLabel":"FREE","effectId":"none","type":"grounded","sizeClass":"small","repeatable":true,"animation":false,"status":"LOCKED","version":"1.0"},{"id":"BER-002","name":"Berry Splash","label":"Berry Splash","filename":"ber-002-berry-splash.webp","family":"BERRY","tier":"Premium Entry","priceRM":0.59,"priceLabel":"RM0.59","effectId":"berry_splash","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"POT-001","name":"Blue Potion","label":"Blue Potion","filename":"pot-001-blue-potion.webp","family":"MAGIC POTION","tier":"Premium Entry","priceRM":0.59,"priceLabel":"RM0.59","effectId":"potion_blue","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"POT-002","name":"Pink Potion","label":"Pink Potion","filename":"pot-002-pink-potion.webp","family":"MAGIC POTION","tier":"Premium","priceRM":1.39,"priceLabel":"RM1.39","effectId":"potion_pink","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"POT-003","name":"Arcane Potion","label":"Arcane Potion","filename":"pot-003-arcane-potion.webp","family":"MAGIC POTION","tier":"Legendary","priceRM":4.9,"priceLabel":"RM4.90","effectId":"potion_arcane","type":"grounded","sizeClass":"hero","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"}]};
+const ASSETS = MANIFEST.assets.map(a=>({...a,family:String(a.family||'').toUpperCase(),sizeClass:String(a.sizeClass||'small').toLowerCase(),tier:String(a.tier||'Basic')}));
+const COLORS={
+'MATCHA':{core:'#3b641f',body:'#78aa39',edge:'#badf72',shine:'#edf8b7'},
+'MILK TEA':{core:'#56341f',body:'#946343',edge:'#d5a77d',shine:'#fff0d7'},
+'BLUE SODA':{core:'#134f78',body:'#2f8cc1',edge:'#74d7f3',shine:'#d9fbff'},
+'DARK SODA':{core:'#241a17',body:'#5f3d2e',edge:'#a87557',shine:'#ead2b9'},
+'LEMONADE':{core:'#7b5b0b',body:'#c79b22',edge:'#f6dd72',shine:'#fff6b1'},
+'STRAWBERRY MILK':{core:'#6f2440',body:'#bf5979',edge:'#f39ab3',shine:'#ffe5ee'},
+'CHOCOLATE':{core:'#3e2113',body:'#74402a',edge:'#b87955',shine:'#ffe1c8'},
+'BERRY':{core:'#5c1731',body:'#a92f5a',edge:'#e97d9c',shine:'#ffe0eb'},
+'MAGIC POTION':{core:'#321c60',body:'#7041a5',edge:'#b783e7',shine:'#eadbff'},
+'MINERAL WATER':{core:'#2c6d94',body:'#57a9d0',edge:'#a0e6f6',shine:'#e9fdff'}
+};
+const SIZE_RATIO={tiny:.16,small:.17,medium:.20,large:.22,hero:.24};
+const TIER_GOOP={Basic:1.00,'Premium Entry':1.08,Premium:1.16,Legendary:1.25};
+const TIER_MOTION={Basic:1.0,'Premium Entry':1.15,Premium:1.28,Legendary:1.48};
+const FAMILY_BIAS={
+'MATCHA':{aspect:1.0,lobes:4,spread:1.16},'MILK TEA':{aspect:1.02,lobes:3,spread:1.12},'BLUE SODA':{aspect:1.10,lobes:5,spread:1.18},'DARK SODA':{aspect:1.20,lobes:4,spread:1.20},'LEMONADE':{aspect:1.06,lobes:5,spread:1.22},'STRAWBERRY MILK':{aspect:1.02,lobes:4,spread:1.12},'CHOCOLATE':{aspect:1.20,lobes:4,spread:1.22},'BERRY':{aspect:1.08,lobes:5,spread:1.24},'MAGIC POTION':{aspect:1.00,lobes:6,spread:1.18},'MINERAL WATER':{aspect:1.14,lobes:4,spread:.92}
+};
+const STORAGE='tinyvibes_goo_v6_4';
+const stage=document.getElementById('planetStage');
+const statusText=document.getElementById('statusText');
+const cardsEl=document.getElementById('cards');
+const countText=document.getElementById('countText');
+const devMeta=document.getElementById('devMeta');
+const toast=document.getElementById('toast');
+let scene,camera,renderer,planet,world,raycaster,mouse;
+let planetRadius=2.2;
+let armed=null;
+const state={items:new Map(),selected:null,drag:null,density:'full'};
+let liquidPatches=new Map();
+let gooTextures=new Map();
+let motionTime=0,lastFrame=performance.now();
+const tmpV=new THREE.Vector3(),tmpN=new THREE.Vector3();
+
+function uid(){return 'tv_'+Math.random().toString(36).slice(2,9)+'_'+Date.now().toString(36)}
+function esc(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function asset(id){return ASSETS.find(a=>a.id===id)||ASSETS[0]}
+function normalizePrice(a){return Number(a.priceRM||0)>0?(a.priceLabel||('RM'+Number(a.priceRM).toFixed(2))):'FREE'}
+function ratioFor(a){return SIZE_RATIO[a.sizeClass]||SIZE_RATIO.small}
+function objectWorldSize(a){return planetRadius*2*ratioFor(a)}
+function gooRadiusFor(item){const a=asset(item.assetId),bias=FAMILY_BIAS[item.family]||FAMILY_BIAS.MATCHA;const tier=TIER_GOOP[item.tier]||1;return objectWorldSize(a)*0.50*1.65*bias.spread*tier}
+function effectCfg(a){return COLORS[a.family]||COLORS.MATCHA}
+function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0)/4294967295}
+function seeded(seed){let x=Math.sin(seed*127.1+311.7)*43758.5453;return x-Math.floor(x)}
+function lerp(a,b,t){return a+(b-a)*t}
+function smooth(t){return t*t*(3-2*t)}
+function hex(c){return c.replace('#','')}
+function hexToRgb(h){const s=hex(h);return [parseInt(s.slice(0,2),16),parseInt(s.slice(2,4),16),parseInt(s.slice(4,6),16)]}
+function mixRgb(a,b,t){return [Math.round(lerp(a[0],b[0],t)),Math.round(lerp(a[1],b[1],t)),Math.round(lerp(a[2],b[2],t))]}
+function densityMode(){const n=state.items.size;if(state.density==='forced')return n<21?'full':n<51?'reduced':'minimal';return n<=20?'full':n<=50?'reduced':'minimal'}
+function save(){localStorage.setItem(STORAGE,JSON.stringify([...state.items.values()].map(x=>({id:x.id,assetId:x.assetId,family:x.family,tier:x.tier,sizeClass:x.sizeClass,effectId:x.effectId,normal:[x.normal.x,x.normal.y,x.normal.z],rotation:x.rotation}))));}
+function load(){try{const a=JSON.parse(localStorage.getItem(STORAGE)||'[]');for(const raw of a){const n=raw.normal;if(!Array.isArray(n)||n.length!==3)continue;const v=new THREE.Vector3(n[0],n[1],n[2]).normalize();state.items.set(raw.id||uid(),{...raw,normal:v,rotation:Number(raw.rotation||0),dom:null,goo:null});}}catch(e){console.warn('saved state ignored',e)}}
+function clear(){for(const item of state.items.values()){if(item.dom)world.remove(item.dom);if(item.goo)world.remove(item.goo);item.dom=null;item.goo=null}state.items.clear();state.selected=null;liquidPatches.clear();updateStatus();save()}
+
+function init3D(){
+ scene=new THREE.Scene();
+ camera=new THREE.PerspectiveCamera(30,1,.1,100);camera.position.set(0,0,8.7);
+ renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:false});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.75));renderer.setClearColor(0x000000,0);renderer.domElement.className='webgl';stage.appendChild(renderer.domElement);
+ world=new THREE.Group();scene.add(world);
+ scene.add(new THREE.HemisphereLight(0xfff8eb,0x4b6080,.98));const light=new THREE.DirectionalLight(0xffffff,.86);light.position.set(4,5,6);scene.add(light);
+ const fill=new THREE.DirectionalLight(0xb9d8ff,.24);fill.position.set(-4,1,2);scene.add(fill);
+ planet=new THREE.Mesh(new THREE.SphereGeometry(planetRadius,72,54),new THREE.MeshStandardMaterial({color:0xf3dfbd,roughness:.72,metalness:.03,emissive:0x2d1c0b,emissiveIntensity:.025}));world.add(planet);
+ raycaster=new THREE.Raycaster();mouse=new THREE.Vector2();resize();
+ renderer.domElement.addEventListener('pointerdown',onStageDown,{passive:false});renderer.domElement.addEventListener('pointermove',onStageMove,{passive:false});window.addEventListener('pointerup',onStageUp,{passive:false});window.addEventListener('pointercancel',onStageUp,{passive:false});window.addEventListener('resize',resize);
+}
+function resize(){if(!camera||!renderer)return;const w=stage.clientWidth||320,h=stage.clientHeight||320;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false)}
+function screenNDC(x,y){const r=renderer.domElement.getBoundingClientRect();mouse.x=((x-r.left)/r.width)*2-1;mouse.y=-((y-r.top)/r.height)*2+1}
+function hitPlanet(clientX,clientY){screenNDC(clientX,clientY);raycaster.setFromCamera(mouse,camera);const hit=raycaster.intersectObject(planet,false)[0];if(!hit)return null;const p=hit.point.clone();const n=p.clone().sub(world.position).normalize();return {point:p,normal:n}}
+function localPosFromNormal(n){return n.clone().multiplyScalar(planetRadius+.008)}
+function orientToNormal(group,n){group.quaternion.copy(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1),n.clone().normalize()))}
+function offsetNormal(n,amount){return n.clone().multiplyScalar(amount)}
+
+function makeGooTexture(item){
+ const cfg=effectCfg(asset(item.assetId)),bias=FAMILY_BIAS[item.family]||FAMILY_BIAS.MATCHA;
+ const key=item.id+'|'+item.assetId+'|'+Math.round(item.normal.x*100)+'|'+Math.round(item.normal.y*100);
+ if(gooTextures.has(key))return gooTextures.get(key);
+ const c=document.createElement('canvas');c.width=c.height=192;const ctx=c.getContext('2d');const img=ctx.createImageData(c.width,c.height);
+ const core=hexToRgb(cfg.core),body=hexToRgb(cfg.body),edge=hexToRgb(cfg.edge),shine=hexToRgb(cfg.shine);
+ const seed=hash(item.id)*1000+hash(item.assetId)*97;const lobes=[];const count=bias.lobes;
+ for(let i=0;i<count;i++){const a=(Math.PI*2*i/count)+(.22*(seeded(seed+i*7)-.5));const rr=.26+.22*seeded(seed+i*11);lobes.push({x:Math.cos(a)*rr,y:Math.sin(a)*rr,s:.22+.10*seeded(seed+i*17),w:.8+.45*seeded(seed+i*19)});}
+ lobes.push({x:(seeded(seed+61)-.5)*.16,y:(seeded(seed+63)-.5)*.16,s:.36,w:1.0});
+ function field(x,y){let f=0;for(const l of lobes){const dx=(x-l.x)/l.w,dy=(y-l.y)/(l.w*(bias.aspect));f+=Math.exp(-(dx*dx+dy*dy)/(2*l.s*l.s));}return Math.min(1,f*.56)}
+ for(let py=0;py<c.height;py++)for(let px=0;px<c.width;px++){const x=px/(c.width-1)*2-1,y=py/(c.height-1)*2-1;let f=field(x,y);const radial=Math.sqrt(x*x+y*y);f*=1-Math.max(0,radial-.84)*1.8;const a0=smooth(Math.max(0,Math.min(1,(f-.23)/.16)));let col=f>.76?mixRgb(body,core,(f-.76)/.24):mixRgb(edge,body,Math.max(0,Math.min(1,(f-.23)/.53)));let sh=Math.exp(-Math.pow((x*.72+y*.42+.20),2)/.055)*Math.exp(-(x*x+y*y)*.9)*.18;if(item.tier==='Legendary')sh*=1.35;col=mixRgb(col,shine,Math.min(.34,sh));const i=(py*c.width+px)*4;img.data[i]=col[0];img.data[i+1]=col[1];img.data[i+2]=col[2];img.data[i+3]=Math.round(a0*255)}
+ ctx.putImageData(img,0,0);const tex=new THREE.CanvasTexture(c);tex.needsUpdate=true;tex.anisotropy=1;tex.minFilter=THREE.LinearFilter;tex.magFilter=THREE.LinearFilter;gooTextures.set(key,tex);return tex;
+}
+function buildGooGeometry(diameter,normal,seed,bumpFactor=1){
+ const seg=18,half=diameter/2,R=planetRadius,geo=new THREE.PlaneGeometry(diameter,diameter,seg,seg),pos=geo.attributes.position;
+ for(let i=0;i<pos.count;i++){const u=pos.getX(i),v=pos.getY(i),rr=Math.sqrt(u*u+v*v);if(rr>half){pos.setZ(i,-.06);continue}const fade=Math.max(0,1-(rr/half)**1.4);const wob=(seeded(seed+i*3)-.5)*.012*fade;const surfaceZ=Math.sqrt(Math.max(.01,R*R-u*u-v*v))-R;const bump=(.028+.055*fade*bumpFactor)+wob;pos.setZ(i,surfaceZ+bump)}geo.computeVertexNormals();return geo}
+function gooDiameter(item){const base=gooRadiusFor(item)*2;let growth=1;for(const o of state.items.values()){if(o.id===item.id)continue;const d=item.normal.distanceTo(o.normal);const ra=gooRadiusFor(item)/planetRadius,rb=gooRadiusFor(o)/planetRadius;const influence=Math.max(0,1-d/Math.max(.22,1.25*(ra+rb)));if(influence>0)growth+=influence*.22*(item.family===o.family?1:.72)}return Math.min(base*1.55,base*growth)}
+function renderGoo(item,animate=true){
+ if(item.effectId==='none')return;
+ const a=asset(item.assetId),cfg=effectCfg(a),n=item.normal.clone().normalize(),frame=new THREE.Group();frame.position.copy(localPosFromNormal(n));orientToNormal(frame,n);frame.renderOrder=2;
+ const d=gooDiameter(item);const geom=buildGooGeometry(d,n,hash(item.id)*1000,TIER_GOOP[item.tier]||1);
+ const mat=new THREE.MeshStandardMaterial({map:makeGooTexture(item),transparent:true,opacity:item.family==='MINERAL WATER'?.84:.97,roughness:.34,metalness:.0,depthWrite:false,side:THREE.DoubleSide,emissive:new THREE.Color(cfg.body),emissiveIntensity:item.family==='MINERAL WATER'?.025:.055});
+ const mesh=new THREE.Mesh(geom,mat);mesh.position.z=.012;mesh.userData.itemId=item.id;frame.add(mesh);world.add(frame);item.goo=frame;liquidPatches.set(item.id,mesh);
+ if(animate){frame.scale.set(.52,.52,.52);setTimeout(()=>{frame.scale.set(1,1,1)},40)}
+}
+function renderObject(item,animate=true){
+ const a=asset(item.assetId),n=item.normal.clone().normalize(),frame=new THREE.Group();frame.position.copy(localPosFromNormal(n));orientToNormal(frame,n);frame.renderOrder=4;
+ const size=objectWorldSize(a);const geo=new THREE.PlaneGeometry(size,size);const tex=loadedTexture(a);const mat=new THREE.MeshBasicMaterial({map:tex,transparent:true,depthWrite:false,depthTest:true,side:THREE.DoubleSide});const mesh=new THREE.Mesh(geo,mat);mesh.position.z=.105;mesh.userData.itemId=item.id;mesh.userData.type='object';mesh.rotation.z=item.rotation*Math.PI/180;frame.add(mesh);world.add(frame);item.dom={frame,mesh};
+ mesh.addEventListener?.('pointerdown',()=>{});
+ if(animate){mesh.scale.set(.72,.72,.72);const t0=performance.now();const dur=320;(function pop(now){const k=Math.min(1,(now-t0)/dur);const e=1-Math.pow(1-k,3);const s=lerp(.72,1.04,e);mesh.scale.set(s,s,s);if(k<1)requestAnimationFrame(pop);else mesh.scale.set(1,1,1)})(performance.now())}
+}
+const loadedTextures={};
+function loadedTexture(a){if(loadedTextures[a.id])return loadedTextures[a.id];const tex=new THREE.TextureLoader().load('assets/liquid/'+a.filename,undefined,undefined,()=>{});tex.minFilter=THREE.LinearFilter;tex.magFilter=THREE.LinearFilter;loadedTextures[a.id]=tex;return tex}
+function removeSelected(){if(!state.selected)return;const item=state.items.get(state.selected);if(!item)return;if(item.dom)world.remove(item.dom.frame);if(item.goo)world.remove(item.goo);state.items.delete(item.id);state.selected=null;updateStatus();save()}
+function setSelected(id){if(state.selected&&state.items.get(state.selected)?.dom)state.items.get(state.selected).dom.mesh.scale.set(1,1,1);state.selected=id;const it=id?state.items.get(id):null;if(it?.dom){it.dom.mesh.scale.set(1.06,1.06,1.06)}}
+function placeAssetAt(assetDef,normal,rotation=0,saveIt=true,animate=true){const n=normal.clone().normalize();const item={id:uid(),assetId:assetDef.id,family:assetDef.family,tier:assetDef.tier,sizeClass:assetDef.sizeClass,effectId:assetDef.effectId,normal:n,rotation};state.items.set(item.id,item);renderGoo(item,animate);renderObject(item,animate);if(saveIt)save();updateStatus();refreshAllGoo();return item}
+function refreshGooItem(item){if(!item.goo)return;const frame=item.goo;frame.position.copy(localPosFromNormal(item.normal));orientToNormal(frame,item.normal);const mesh=frame.children[0];const newD=gooDiameter(item);mesh.geometry.dispose();mesh.geometry=buildGooGeometry(newD,item.normal,hash(item.id)*1000,TIER_GOOP[item.tier]||1);mesh.position.z=.012;}
+function refreshAllGoo(){for(const item of state.items.values())if(item.goo)refreshGooItem(item);applyDensity();}
+function updateStatus(){statusText.textContent=state.items.size+' object'+(state.items.size===1?'':'s');const m=densityMode();devMeta.textContent=`State: ${state.items.size} placed · Goo: ${state.items.size?'material active':'idle'} · Density: ${m}`}
+function applyDensity(){const m=densityMode();state.density=m;for(const item of state.items.values()){const g=item.goo?.children?.[0];if(!g)continue;g.material.opacity=m==='minimal'?(item.family==='MINERAL WATER'?.58:.78):(item.family==='MINERAL WATER'?.84:.97)}}
+function nearest(item,limit=5){const a=[];for(const o of state.items.values()){if(o.id===item.id)continue;a.push([item.normal.distanceTo(o.normal),o])}a.sort((x,y)=>x[0]-y[0]);return a.slice(0,limit).map(x=>x[1])}
+function onStageDown(e){e.preventDefault();const p=e.pointerType==='mouse'&&e.button!==0;if(p)return;screenNDC(e.clientX,e.clientY);raycaster.setFromCamera(mouse,camera);const objects=[];for(const item of state.items.values())if(item.dom?.mesh)objects.push(item.dom.mesh);const hit=raycaster.intersectObjects(objects,false)[0];if(hit){const item=state.items.get(hit.object.userData.itemId);if(!item)return;setSelected(item.id);state.drag={id:item.id,startX:e.clientX,startY:e.clientY,moved:false,pointerId:e.pointerId};try{renderer.domElement.setPointerCapture(e.pointerId)}catch(_){ }return}
+ const hp=hitPlanet(e.clientX,e.clientY);if(hp&&armed){const item=placeAssetAt(armed,hp.normal,0,true,true);armed=null;setSelected(null);syncArmed();showToast('Placed and locked ✓');}
+}
+function onStageMove(e){if(!state.drag)return;e.preventDefault();const d=state.drag,item=state.items.get(d.id);if(!item)return;if(Math.hypot(e.clientX-d.startX,e.clientY-d.startY)>6)d.moved=true;if(!d.moved)return;const hp=hitPlanet(e.clientX,e.clientY);if(!hp)return;item.normal.copy(hp.normal);if(item.dom){item.dom.frame.position.copy(localPosFromNormal(item.normal));orientToNormal(item.dom.frame,item.normal)}if(item.goo){refreshGooItem(item);for(const o of nearest(item,4))if(o.goo)refreshGooItem(o)}applyDensity()}
+function onStageUp(e){if(!state.drag)return;const d=state.drag,item=state.items.get(d.id);state.drag=null;try{renderer.domElement.releasePointerCapture(d.pointerId)}catch(_){ }if(!item)return;if(!d.moved){item.rotation=(item.rotation+15)%360;item.dom.mesh.rotation.z=item.rotation*Math.PI/180;setSelected(item.id);showToast('+15° ✓')}else{refreshGooItem(item);for(const o of nearest(item,5))if(o.goo)refreshGooItem(o);save()}updateStatus()}
+function syncArmed(){document.querySelectorAll('.card').forEach(c=>c.classList.toggle('armed',c.dataset.id===armed?.id))}
+function showToast(msg){toast.textContent=msg;toast.classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>toast.classList.remove('show'),1200)}
+function selectAsset(id){const a=asset(id);armed=armed?.id===a.id?null:a;setSelected(null);syncArmed();if(armed)showToast('Tap the planet once')}
+function renderCards(filter='ALL'){cardsEl.innerHTML='';const list=ASSETS.filter(a=>filter==='FREE'?normalizePrice(a)==='FREE':filter==='PREMIUM'?['Premium Entry','Premium'].includes(a.tier):filter==='LEGENDARY'?a.tier==='Legendary':true);countText.textContent=list.length+' assets';for(const a of list){const b=document.createElement('button');b.type='button';b.className='card';b.dataset.id=a.id;b.innerHTML=`<div class="thumb"><img src="assets/liquid/${a.filename}" alt=""></div><div><div class="cardName">${esc(a.label)}</div><div class="cardSub">${esc(a.family)}</div><div class="chips"><span class="chip tier">${esc(a.tier)}</span><span class="chip">${esc(normalizePrice(a))}</span></div></div>`;b.addEventListener('click',()=>selectAsset(a.id));cardsEl.appendChild(b)}}
+document.querySelectorAll('#tabs button').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('#tabs button').forEach(x=>x.classList.remove('active'));btn.classList.add('active');renderCards(btn.dataset.filter)}));
+document.getElementById('devToggle').addEventListener('click',()=>document.getElementById('devPanel').classList.toggle('open'));
+function presetPositions(n){const arr=[];for(let i=0;i<n;i++){const ga=2.399963*i+0.55;const z=lerp(.92,-.62,(i+.5)/n);const r=Math.sqrt(Math.max(0,1-z*z));arr.push(new THREE.Vector3(Math.cos(ga)*r,Math.sin(ga)*r,z).normalize())}return arr}
+function getTestAsset(i){const ids=['MCH-002','MTB-002','BSD-002','LEM-002','STM-002','CHO-002','BER-002','POT-001','MW-001','SOD-002'];return asset(ids[i%ids.length])}
+function runPreset(k){clear();if(k==='clear')return;if(k==='reset'){localStorage.removeItem(STORAGE);showToast('Saved state cleared');return}if(k==='edge'){const a=asset('MCH-004');const ns=[new THREE.Vector3(1,0,.08),new THREE.Vector3(-1,0,.08),new THREE.Vector3(0,1,.08),new THREE.Vector3(0,-1,.08)].map(v=>v.normalize());ns.forEach((n,i)=>placeAssetAt(a,n,i*15,false,false));}
+else if(k==='rotate'){placeAssetAt(asset('MCH-004'),new THREE.Vector3(.3,.3,.9).normalize(),30,false,false);}
+else if(k==='drag'){placeAssetAt(asset('MCH-003'),new THREE.Vector3(0.1,-.15,.98).normalize(),0,false,false);showToast('Drag the object');}
+else {const n=k==='density'?60:Number(k);const pts=presetPositions(n);for(let i=0;i<pts.length;i++){const a=k==='20x'?getTestAsset(i):asset('MCH-002');placeAssetAt(a,pts[i],(i%12)*15,false,false)}}refreshAllGoo();save();showToast(k==='20x'?'20 mixed ✓':k==='density'?'Density test ✓':`${k} cup${k==='1'?'':'s'} ✓`)}
+document.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>runPreset(b.dataset.preset)));
+function animate(now){requestAnimationFrame(animate);const dt=Math.min(48,now-lastFrame);lastFrame=now;motionTime+=dt;const t=motionTime/1000;const mode=densityMode();state.density=mode;
+ for(const item of state.items.values()){const goo=item.goo;if(!goo)continue;const tier=TIER_MOTION[item.tier]||1;const f=FAMILY_BIAS[item.family]||FAMILY_BIAS.MATCHA;const mesh=goo.children[0];const m=f.spread;const drift=.010*tier*m;const sx=Math.sin(t*drift*5+hash(item.id)*8)*0.016;const sy=Math.cos(t*drift*4+hash(item.id)*5)*0.014;mesh.position.x=sx*gooDiameter(item);mesh.position.y=sy*gooDiameter(item);const pulse=1+Math.sin(t*(.42*tier)+hash(item.id)*7)*.012;mesh.scale.set(1+pulse*.008,1-pulse*.006,1);if(mode==='minimal')mesh.scale.set(1,1,1)}
+ renderer.render(scene,camera)}
+
+init3D();renderCards();load();for(const item of state.items.values()){renderGoo(item,false);renderObject(item,false)}updateStatus();refreshAllGoo();requestAnimationFrame(animate);
+</script>
+</body></html>
