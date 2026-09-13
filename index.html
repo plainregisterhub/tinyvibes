@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>TinyVibes — Liquid V6</title>
+<style>
+:root{
+  --bg:#071425; --bg2:#0b1d33; --ink:#f5f8ff; --muted:#9db0c9;
+  --line:rgba(255,255,255,.10); --glass:rgba(8,20,37,.78);
+  --accent:#9fd7ff; --planet:#f4dfbd; --planetHi:#fff2d9;
+  --shadow:0 20px 60px rgba(0,0,0,.36);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:
+ radial-gradient(circle at 20% 0%,rgba(96,157,230,.12),transparent 28%),
+ radial-gradient(circle at 90% 20%,rgba(78,118,190,.10),transparent 30%),var(--bg);color:var(--ink);
+ font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+body{overflow-x:hidden}
+button{font:inherit}
+.app{width:min(1180px,100%);margin:0 auto;padding:18px 18px 28px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px}
+.brand{display:flex;align-items:center;gap:11px}.logo{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(145deg,#8ad5ff,#74a5ee);box-shadow:0 12px 30px rgba(54,117,199,.28);font-size:22px}
+.brand h1{font-size:24px;line-height:1;margin:0}.brand p{margin:4px 0 0;color:var(--muted);font-size:12px}
+.badge{border:1px solid rgba(159,215,255,.26);background:rgba(91,146,214,.18);padding:9px 13px;border-radius:999px;font-weight:800;font-size:12px;white-space:nowrap}
+.scene{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(310px,.75fr);gap:16px;align-items:stretch}
+.planetPanel,.libraryPanel{border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.018));border-radius:24px;box-shadow:var(--shadow);backdrop-filter:blur(8px)}
+.planetPanel{padding:16px;display:flex;flex-direction:column;min-height:640px}
+.panelHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}.panelHead h2{font-size:15px;margin:0}.panelHead span{font-size:11px;color:var(--muted)}
+.planetStage{position:relative;width:min(100%,650px);aspect-ratio:1/1;margin:auto;display:grid;place-items:center;touch-action:none;user-select:none;isolation:isolate}
+.planetShell{position:absolute;inset:5%;border-radius:50%;overflow:visible;z-index:1}
+.planetBase{position:absolute;inset:0;border-radius:50%;overflow:hidden;background:
+ radial-gradient(circle at 34% 26%,var(--planetHi) 0 9%,rgba(255,249,231,.96) 20%,rgba(245,225,191,.98) 62%,#edbf76 100%);
+ box-shadow:inset -12px -20px 34px rgba(128,78,40,.15),inset 9px 10px 18px rgba(255,255,255,.35),0 18px 38px rgba(0,0,0,.28)}
+.planetBase:before{content:"";position:absolute;inset:0;background:
+ radial-gradient(circle at 68% 71%,rgba(208,140,67,.13),transparent 19%),
+ radial-gradient(circle at 24% 64%,rgba(224,169,92,.10),transparent 22%),
+ radial-gradient(circle at 78% 24%,rgba(255,255,255,.15),transparent 22%);
+ mix-blend-mode:multiply;opacity:.75}
+.surfaceLayer{position:absolute;inset:5%;border-radius:50%;overflow:hidden;z-index:2;clip-path:circle(50% at 50% 50%);pointer-events:none}
+.surfaceSvg{width:100%;height:100%;display:block;overflow:visible}
+.liquidPatch{transition:opacity .25s ease;transform-origin:center;}
+.patchMorph{transform-origin:center;}
+.objectLayer{position:absolute;inset:5%;border-radius:50%;z-index:3;overflow:visible;pointer-events:none}
+.object-anchor{position:absolute;width:1px;height:1px;left:50%;top:50%;pointer-events:none}
+.object-rot{position:absolute;left:0;top:0;transform:translate(-50%,-50%) rotate(var(--rot,0deg));transform-origin:center;pointer-events:none}
+.object-anim{width:var(--size);height:var(--size);position:relative;transform:scale(1);pointer-events:auto;touch-action:none;cursor:grab}
+.object-anim:active{cursor:grabbing}.object-anim.selected:after{content:"";position:absolute;inset:-5px;border-radius:28%;border:1.5px solid rgba(255,255,255,.6);box-shadow:0 0 0 4px rgba(255,255,255,.06);pointer-events:none}
+.object-anim img,.placeholder{width:100%;height:100%;display:block;object-fit:contain;filter:drop-shadow(0 7px 6px rgba(55,30,16,.17));-webkit-user-drag:none}
+.placeholder{border-radius:25%;display:grid;place-items:center;font-weight:900;font-size:calc(var(--size)*.22);background:linear-gradient(145deg,var(--c1),var(--c2));color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
+.instruction{text-align:center;color:var(--muted);font-size:11px;margin-top:8px}.instruction b{color:#dde9f9}
+.devToggle{margin-top:auto;align-self:flex-end;border:1px solid var(--line);background:rgba(255,255,255,.04);color:#b7c7da;padding:7px 10px;border-radius:999px;font-size:10px}
+.devPanel{display:none;margin-top:10px;border-top:1px solid var(--line);padding-top:10px}.devPanel.open{display:block}.devGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.devGrid button{border:1px solid var(--line);background:rgba(255,255,255,.045);color:#d6e2f0;padding:7px 4px;border-radius:10px;font-size:10px}.devMeta{margin-top:8px;font-size:9px;color:#7f94ad;line-height:1.45}
+.libraryPanel{padding:14px;display:flex;flex-direction:column;min-height:640px}.libraryHead{display:flex;justify-content:space-between;align-items:end;gap:10px;margin-bottom:12px}.libraryHead h3{margin:0;font-size:16px}.count{color:var(--muted);font-size:10px}
+.tabs{display:flex;gap:7px;overflow:auto;padding-bottom:2px;margin-bottom:10px}.tabs button{flex:0 0 auto;border:1px solid var(--line);background:rgba(255,255,255,.035);color:#b7c7da;padding:7px 10px;border-radius:999px;font-size:10px}.tabs button.active{background:rgba(159,215,255,.15);color:#eff8ff;border-color:rgba(159,215,255,.33)}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;overflow:auto;padding-right:2px}.card{border:1px solid var(--line);background:rgba(255,255,255,.025);border-radius:16px;padding:8px;display:grid;grid-template-columns:58px 1fr;gap:8px;align-items:center;min-width:0;text-align:left;color:inherit}.card:active{transform:scale(.985)}.thumb{width:58px;height:58px;border-radius:13px;background:rgba(255,255,255,.05);overflow:hidden;display:grid;place-items:center}.thumb img{width:100%;height:100%;object-fit:contain}.cardMeta{min-width:0}.cardName{font-size:10px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cardSub{font-size:9px;color:var(--muted);margin-top:3px}.chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}.chip{font-size:8px;border:1px solid rgba(255,255,255,.09);padding:2px 5px;border-radius:999px;color:#a9bdd3}.chip.tier{color:#d8edff}.card.armed{border-color:rgba(159,215,255,.55);box-shadow:0 0 0 2px rgba(159,215,255,.08)}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(15px);background:rgba(7,17,30,.93);border:1px solid rgba(255,255,255,.12);color:#eff7ff;padding:9px 12px;border-radius:999px;font-size:11px;opacity:0;pointer-events:none;transition:.22s ease;z-index:50}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.legend{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;color:#8fa5bd;font-size:9px;margin-top:10px}.legend span{display:inline-flex;align-items:center;gap:5px}.dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+@media (max-width:900px){.scene{grid-template-columns:1fr}.planetPanel,.libraryPanel{min-height:unset}.planetPanel{min-height:0;padding-bottom:12px}.planetStage{width:min(94vw,590px)}.cards{max-height:380px}}
+@media (max-width:520px){.app{padding:12px 10px 20px}.topbar{margin-bottom:10px}.brand h1{font-size:21px}.brand p{font-size:11px}.logo{width:38px;height:38px}.badge{font-size:10px;padding:8px 10px}.planetPanel,.libraryPanel{border-radius:20px}.planetPanel{padding:11px}.planetStage{width:min(94vw,420px)}.cards{grid-template-columns:1fr;max-height:none}.card{grid-template-columns:64px 1fr}.thumb{width:64px;height:64px}.instruction{font-size:10px}.devGrid{grid-template-columns:repeat(3,1fr)}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><div class="logo">🪐</div><div><h1>TinyVibes</h1><p>Build your little world.</p></div></div>
+    <div class="badge">Liquid V6</div>
+  </header>
+
+  <main class="scene">
+    <section class="planetPanel">
+      <div class="panelHead"><h2>Your little world</h2><span id="statusText">0 objects</span></div>
+      <div id="planetStage" class="planetStage" aria-label="TinyVibes planet">
+        <div class="planetShell"><div class="planetBase"></div></div>
+        <div class="surfaceLayer"><svg id="surfaceSvg" class="surfaceSvg" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true"></svg></div>
+        <div id="objectLayer" class="objectLayer"></div>
+      </div>
+      <div class="instruction"><b>Tap a card</b> → tap planet to place once · <b>tap object</b> → rotate +15° · <b>drag</b> → move</div>
+      <div class="legend"><span><i class="dot" style="background:#92c6f1"></i>water</span><span><i class="dot" style="background:#94c956"></i>matcha</span><span><i class="dot" style="background:#b26f58"></i>milk tea</span><span><i class="dot" style="background:#82cde2"></i>soda</span><span><i class="dot" style="background:#cc6a94"></i>berry</span></div>
+      <button id="devToggle" class="devToggle">DEV</button>
+      <div id="devPanel" class="devPanel">
+        <div class="devGrid">
+          <button data-preset="clear">Clear</button><button data-preset="1">1 Cup</button><button data-preset="5">5 Cups</button><button data-preset="10">10 Cups</button>
+          <button data-preset="20m">20 Matcha</button><button data-preset="20x">20 Mixed</button><button data-preset="edge">Edge</button><button data-preset="rotate">Rotate</button>
+          <button data-preset="drag">Drag</button><button data-preset="density">Density 60</button><button data-preset="badmanifest">Offline</button><button data-preset="resetstate">Reset Saved</button>
+        </div>
+        <div id="devMeta" class="devMeta">State: fresh · Liquid: idle · Density: full</div>
+      </div>
+    </section>
+
+    <aside class="libraryPanel">
+      <div class="libraryHead"><h3>Liquid Collection</h3><span id="countText" class="count">25 assets</span></div>
+      <div class="tabs" id="tabs"><button class="active" data-filter="ALL">All</button><button data-filter="FREE">Free</button><button data-filter="PREMIUM">Premium</button><button data-filter="LEGENDARY">Legendary</button></div>
+      <div id="cards" class="cards"></div>
+    </aside>
+  </main>
+</div>
+<div id="toast" class="toast"></div>
+<script>
+'use strict';
+
+/* TinyVibes Liquid V6 — fresh architecture. No V3/V5 runtime copied. */
+const EMBEDDED_MANIFEST = {"project":"TinyVibes","system":"Liquid V1","version":"1.0.0","asset_count":25,"description":"Production data manifest for TinyVibes Liquid V1.","rules":{"planet":"fixed_visual_canvas","liquid_role":"local_surface_effect","physics":false,"mixing":true,"edge_bleed":true,"source_artwork_contains_effect":false},"assets":[{"id":"MW-001","name":"Mineral Water","label":"Mineral Water","filename":"mw-001-mineral-water.webp","family":"MINERAL WATER","tier":"Basic","priceRM":0,"priceLabel":"FREE","effectId":"mineral_water","type":"grounded","sizeClass":"small","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"MCH-001","name":"Matcha Classic","label":"Matcha Classic","filename":"mch-001-matcha-classic.webp","family":"MATCHA","tier":"Basic","priceRM":0,"priceLabel":"FREE","effectId":"none","type":"grounded","sizeClass":"small","repeatable":true,"animation":false,"status":"LOCKED","version":"1.0"},{"id":"MCH-002","name":"Matcha Stream","label":"Matcha Stream","filename":"mch-002-matcha-stream.webp","family":"MATCHA","tier":"Premium Entry","priceRM":0,"priceLabel":"FREE","effectId":"matcha_liquid","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"MCH-003","name":"Matcha Deluxe","label":"Matcha Deluxe","filename":"mch-003-matcha-deluxe.webp","family":"MATCHA","tier":"Premium","priceRM":1.39,"priceLabel":"RM1.39","effectId":"matcha_liquid","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"MCH-004","name":"Matcha Legendary","label":"Matcha Legendary","filename":"mch-004-matcha-legendary.webp","family":"MATCHA","tier":"Legendary","priceRM":4.9,"priceLabel":"RM4.90","effectId":"matcha_signature","type":"grounded","sizeClass":"hero","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"MTB-001","name":"Milk Tea Classic","label":"Milk Tea Classic","filename":"mtb-001-milk-tea-classic.webp","family":"MILK TEA","tier":"Basic","priceRM":0,"priceLabel":"FREE","effectId":"none","type":"grounded","sizeClass":"small","repeatable":true,"animation":false,"status":"LOCKED","version":"1.0"},{"id":"MTB-002","name":"Boba Stream","label":"Boba Stream","filename":"mtb-002-boba-stream.webp","family":"MILK TEA","tier":"Premium Entry","priceRM":0.59,"priceLabel":"RM0.59","effectId":"milk_tea_liquid","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"MTB-003","name":"Brown Sugar Milk Tea","label":"Brown Sugar Milk Tea","filename":"mtb-003-brown-sugar-milk-tea.webp","family":"MILK TEA","tier":"Premium","priceRM":1.39,"priceLabel":"RM1.39","effectId":"milk_tea_rich","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"BSD-001","name":"Blue Soda Classic","label":"Blue Soda Classic","filename":"bsd-001-blue-soda-classic.webp","family":"BLUE SODA","tier":"Basic","priceRM":0,"priceLabel":"FREE","effectId":"none","type":"grounded","sizeClass":"small","repeatable":true,"animation":false,"status":"LOCKED","version":"1.0"},{"id":"BSD-002","name":"Bubble Stream","label":"Bubble Stream","filename":"bsd-002-bubble-stream.webp","family":"BLUE SODA","tier":"Premium Entry","priceRM":0.59,"priceLabel":"RM0.59","effectId":"blue_soda_bubbles","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"BSD-003","name":"Neon Blue Pop","label":"Neon Blue Pop","filename":"bsd-003-neon-blue-pop.webp","family":"BLUE SODA","tier":"Premium","priceRM":1.39,"priceLabel":"RM1.39","effectId":"blue_soda_rich","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"REVISION","version":"1.0"},{"id":"BSD-004","name":"Blue Soda Signature","label":"Blue Soda Signature","filename":"bsd-004-blue-soda-signature.webp","family":"BLUE SODA","tier":"Legendary","priceRM":4.9,"priceLabel":"RM4.90","effectId":"blue_soda_signature","type":"grounded","sizeClass":"hero","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"SOD-001","name":"Dark Soda","label":"Dark Soda","filename":"sod-001-dark-soda.webp","family":"DARK SODA","tier":"Basic","priceRM":0,"priceLabel":"FREE","effectId":"none","type":"grounded","sizeClass":"small","repeatable":true,"animation":false,"status":"LOCKED","version":"1.0"},{"id":"SOD-002","name":"Fizzy Dark Soda","label":"Fizzy Dark Soda","filename":"sod-002-fizzy-dark-soda.webp","family":"DARK SODA","tier":"Premium Entry","priceRM":0.59,"priceLabel":"RM0.59","effectId":"dark_soda_fizz","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"LEM-001","name":"Lemonade Classic","label":"Lemonade Classic","filename":"lem-001-lemonade-classic.webp","family":"LEMONADE","tier":"Basic","priceRM":0,"priceLabel":"FREE","effectId":"none","type":"grounded","sizeClass":"small","repeatable":true,"animation":false,"status":"LOCKED","version":"1.0"},{"id":"LEM-002","name":"Sparkling Lemonade","label":"Sparkling Lemonade","filename":"lem-002-sparkling-lemonade.webp","family":"LEMONADE","tier":"Premium Entry","priceRM":0.59,"priceLabel":"RM0.59","effectId":"lemonade_sparkle","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"STM-001","name":"Strawberry Milk","label":"Strawberry Milk","filename":"stm-001-strawberry-milk.webp","family":"STRAWBERRY MILK","tier":"Basic","priceRM":0,"priceLabel":"FREE","effectId":"none","type":"grounded","sizeClass":"small","repeatable":true,"animation":false,"status":"LOCKED","version":"1.0"},{"id":"STM-002","name":"Strawberry Cream","label":"Strawberry Cream","filename":"stm-002-strawberry-cream.webp","family":"STRAWBERRY MILK","tier":"Premium","priceRM":1.39,"priceLabel":"RM1.39","effectId":"strawberry_cream","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"CHO-001","name":"Chocolate Drink","label":"Chocolate Drink","filename":"cho-001-chocolate-drink.webp","family":"CHOCOLATE","tier":"Basic","priceRM":0,"priceLabel":"FREE","effectId":"none","type":"grounded","sizeClass":"small","repeatable":true,"animation":false,"status":"LOCKED","version":"1.0"},{"id":"CHO-002","name":"Chocolate Melt","label":"Chocolate Melt","filename":"cho-002-chocolate-melt.webp","family":"CHOCOLATE","tier":"Premium","priceRM":1.39,"priceLabel":"RM1.39","effectId":"chocolate_melt","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"BER-001","name":"Berry Juice","label":"Berry Juice","filename":"ber-001-berry-juice.webp","family":"BERRY","tier":"Basic","priceRM":0,"priceLabel":"FREE","effectId":"none","type":"grounded","sizeClass":"small","repeatable":true,"animation":false,"status":"LOCKED","version":"1.0"},{"id":"BER-002","name":"Berry Splash","label":"Berry Splash","filename":"ber-002-berry-splash.webp","family":"BERRY","tier":"Premium Entry","priceRM":0.59,"priceLabel":"RM0.59","effectId":"berry_splash","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"POT-001","name":"Blue Potion","label":"Blue Potion","filename":"pot-001-blue-potion.webp","family":"MAGIC POTION","tier":"Premium Entry","priceRM":0.59,"priceLabel":"RM0.59","effectId":"potion_blue","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"POT-002","name":"Pink Potion","label":"Pink Potion","filename":"pot-002-pink-potion.webp","family":"MAGIC POTION","tier":"Premium","priceRM":1.39,"priceLabel":"RM1.39","effectId":"potion_pink","type":"grounded","sizeClass":"medium","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"},{"id":"POT-003","name":"Arcane Potion","label":"Arcane Potion","filename":"pot-003-arcane-potion.webp","family":"MAGIC POTION","tier":"Legendary","priceRM":4.9,"priceLabel":"RM4.90","effectId":"potion_arcane","type":"grounded","sizeClass":"hero","repeatable":true,"animation":true,"status":"LOCKED","version":"1.0"}]};
+const SIZE_RATIO = {tiny:.12,small:.16,medium:.22,large:.28,hero:.34,effect:.18};
+const TIER_FOOTPRINT = {'Basic':1.00,'Premium Entry':1.05,'Premium':1.10,'Legendary':1.16};
+const TIER_FLOW = {'Basic':0.85,'Premium Entry':1.0,'Premium':1.12,'Legendary':1.22};
+const FAMILY_ALIASES = {
+ 'MINERAL WATER':'MINERAL WATER','MINERAL_WATER':'MINERAL WATER','WATER':'MINERAL WATER',
+ 'MATCHA':'MATCHA','MILK TEA':'MILK TEA','MILK_TEA':'MILK TEA','BLUE SODA':'BLUE SODA','BLUE_SODA':'BLUE SODA','DARK SODA':'DARK SODA','DARK_SODA':'DARK SODA',
+ 'LEMONADE':'LEMONADE','STRAWBERRY MILK':'STRAWBERRY MILK','STRAWBERRY_MILK':'STRAWBERRY MILK','CHOCOLATE':'CHOCOLATE','BERRY':'BERRY','MAGIC POTION':'MAGIC POTION','MAGIC_POTION':'MAGIC POTION'
+};
+const EFFECT_REGISTRY = {
+ 'mineral_water':{family:'MINERAL WATER',h:204,s:62,l:71,a:.30,motion:'ripple',secondary:'caustic'},
+ 'matcha_liquid':{family:'MATCHA',h:84,s:48,l:58,a:.40,motion:'creamy',secondary:'none'},
+ 'matcha_signature':{family:'MATCHA',h:88,s:55,l:56,a:.43,motion:'spiral',secondary:'motes'},
+ 'milk_tea_liquid':{family:'MILK TEA',h:20,s:46,l:57,a:.37,motion:'roll',secondary:'boba'},
+ 'milk_tea_rich':{family:'MILK TEA',h:18,s:53,l:51,a:.41,motion:'richroll',secondary:'sheen'},
+ 'blue_soda_bubbles':{family:'BLUE SODA',h:192,s:62,l:69,a:.38,motion:'fizz',secondary:'bubbles'},
+ 'blue_soda_rich':{family:'BLUE SODA',h:196,s:64,l:67,a:.40,motion:'fizzRich',secondary:'bubbles'},
+ 'blue_soda_signature':{family:'BLUE SODA',h:194,s:70,l:70,a:.42,motion:'signatureFizz',secondary:'bubbles'},
+ 'dark_soda_liquid':{family:'DARK SODA',h:20,s:40,l:40,a:.42,motion:'syrup',secondary:'fizz'},
+ 'dark_soda_fizz':{family:'DARK SODA',h:20,s:45,l:38,a:.43,motion:'syrupFizz',secondary:'fizz'},
+ 'lemonade_liquid':{family:'LEMONADE',h:48,s:72,l:64,a:.39,motion:'sparkle',secondary:'glints'},
+ 'lemonade_sparkle':{family:'LEMONADE',h:50,s:76,l:63,a:.41,motion:'sparklePlus',secondary:'glints'},
+ 'strawberry_milk_liquid':{family:'STRAWBERRY MILK',h:348,s:58,l:72,a:.36,motion:'blush',secondary:'none'},
+ 'strawberry_cream':{family:'STRAWBERRY MILK',h:351,s:62,l:70,a:.39,motion:'blushCream',secondary:'none'},
+ 'chocolate_liquid':{family:'CHOCOLATE',h:24,s:48,l:43,a:.44,motion:'ganache',secondary:'sheen'},
+ 'chocolate_melt':{family:'CHOCOLATE',h:25,s:52,l:40,a:.46,motion:'ganacheMelt',secondary:'sheen'},
+ 'berry_liquid':{family:'BERRY',h:338,s:60,l:54,a:.42,motion:'berry',secondary:'rings'},
+ 'berry_splash':{family:'BERRY',h:342,s:67,l:55,a:.44,motion:'berrySplash',secondary:'rings'},
+ 'magic_potion_liquid':{family:'MAGIC POTION',h:276,s:58,l:61,a:.40,motion:'arcane',secondary:'motes'},
+ 'potion_blue':{family:'MAGIC POTION',h:247,s:58,l:62,a:.39,motion:'arcaneBlue',secondary:'motes'},
+ 'potion_pink':{family:'MAGIC POTION',h:322,s:61,l:66,a:.40,motion:'arcanePink',secondary:'motes'},
+ 'potion_arcane':{family:'MAGIC POTION',h:276,s:62,l:62,a:.43,motion:'arcane',secondary:'motes'},
+ 'magic_potion_pink':{family:'MAGIC POTION',h:324,s:62,l:67,a:.39,motion:'arcanePink',secondary:'motes'}
+};
+const DEFAULT_EFFECT_FOR_FAMILY = {
+ 'MINERAL WATER':'mineral_water','MATCHA':'matcha_liquid','MILK TEA':'milk_tea_liquid','BLUE SODA':'blue_soda_bubbles','DARK SODA':'dark_soda_liquid','LEMONADE':'lemonade_liquid','STRAWBERRY MILK':'strawberry_milk_liquid','CHOCOLATE':'chocolate_liquid','BERRY':'berry_liquid','MAGIC POTION':'magic_potion_liquid'
+};
+const COUSINS = [new Set(['MATCHA','MILK TEA','STRAWBERRY MILK']),new Set(['BLUE SODA','DARK SODA','LEMONADE']),new Set(['BERRY','MAGIC POTION'])];
+const STORAGE_KEY='tinyvibes_liquid_v6_state_2026_09';
+const SVG_NS='http://www.w3.org/2000/svg';
+
+const el = id => document.getElementById(id);
+const planetStage=el('planetStage'), objectLayer=el('objectLayer'), surfaceSvg=el('surfaceSvg'), cardsEl=el('cards'), toastEl=el('toast');
+const statusText=el('statusText'), countText=el('countText'), devMeta=el('devMeta');
+let assets=[];
+let state={items:new Map(),armed:null,selected:null,densityMode:'full',manifest:{assets:[],source:'embedded'}, drag:null};
+let toastTimer=null;
+let manifestOffline=false;
+
+function normalizeKey(v){return String(v??'').trim().replace(/[_-]+/g,' ').replace(/\s+/g,' ').toUpperCase()}
+function normalizeFamily(v,name=''){const k=normalizeKey(v); if(FAMILY_ALIASES[k]) return FAMILY_ALIASES[k]; const n=normalizeKey(name); for(const f of Object.keys(FAMILY_ALIASES)){if(n.includes(f)) return FAMILY_ALIASES[f]} if(n.includes('SODA')) return n.includes('DARK')?'DARK SODA':'BLUE SODA'; if(n.includes('MATCHA'))return 'MATCHA'; if(n.includes('MILK TEA'))return 'MILK TEA'; if(n.includes('LEMON'))return 'LEMONADE'; if(n.includes('BERRY'))return 'BERRY'; return 'MINERAL WATER'}
+function normalizeTier(v){const k=normalizeKey(v); if(k==='PREMIUM ENTRY'||k==='ENTRY')return 'Premium Entry'; if(k==='PREMIUM')return 'Premium'; if(k==='LEGENDARY'||k==='LEGEND')return 'Legendary'; return 'Basic'}
+function normalizeSize(v,tier){let k=String(v??'').trim().toLowerCase(); if(k==='tiny')return 'tiny'; if(k==='small')return 'small'; if(k==='medium')return 'medium'; if(k==='large')return 'large'; if(k==='hero')return 'hero'; if(k==='effect')return 'effect'; return tier==='Legendary'?'large':tier==='Premium'?'medium':'small'}
+function normalizePrice(v){const n=Number(v); if(Number.isFinite(n)&&n>0)return `RM${n.toFixed(2)}`; const s=String(v??'').trim(); return s || 'FREE'}
+function normalizeEffect(v,family){const k=String(v??'').trim().toLowerCase(); if(!k||k==='none')return null; return EFFECT_REGISTRY[k]?k:DEFAULT_EFFECT_FOR_FAMILY[family]||null}
+function normalizeAsset(raw){
+  const family=normalizeFamily(raw.family??raw.category??raw.group??raw.familyName,raw.name??raw.label??raw.id);
+  const tier=normalizeTier(raw.tier??raw.rarity??raw.grade);
+  const sizeClass=normalizeSize(raw.sizeClass??raw.size??raw.size_class??raw.class??raw.tier_size,tier);
+  const effectId=normalizeEffect(raw.effectId??raw.effect??raw.liquid??raw.liquidEffect,family);
+  const id=String(raw.id??'').trim();
+  return {id,name:String(raw.name??raw.label??id),label:String(raw.label??raw.name??id),filename:String(raw.filename??''),family,tier,sizeClass,effectId,type:String(raw.type??'grounded'),priceLabel:normalizePrice(raw.priceLabel??raw.price??raw.cost),repeatable:raw.repeatable!==false,animation:raw.animation!==false,status:String(raw.status??'READY')};
+}
+function validateAssets(list){const out=[];const seen=new Set();for(const raw of list||[]){const a=normalizeAsset(raw); if(!a.id||seen.has(a.id))continue; seen.add(a.id);out.push(a)}return out}
+function familyOf(asset){return asset?.family||'MINERAL WATER'}
+function effectCfg(asset){return EFFECT_REGISTRY[asset?.effectId]||EFFECT_REGISTRY[DEFAULT_EFFECT_FOR_FAMILY[familyOf(asset)]||'mineral_water']}
+async function loadManifest(){
+  try{
+    const r=await fetch('data/liquid-manifest.json',{cache:'no-store'}); if(!r.ok)throw new Error('manifest');
+    const j=await r.json(); assets=validateAssets(j.assets); state.manifest={assets,source:'network'}; manifestOffline=false;
+  }catch(e){assets=validateAssets(EMBEDDED_MANIFEST.assets);state.manifest={assets,source:'embedded'};manifestOffline=true;showToast('Offline manifest — using built-in assets')}
+  state.manifest.assets=assets; renderCards();
+}
+function assetById(id){return assets.find(a=>a.id===id)||null}
+function saveState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify({items:[...state.items.values()].map(({dom,...x})=>x)}))}catch(_){} }
+function loadState(){try{const raw=localStorage.getItem(STORAGE_KEY);if(!raw)return;const j=JSON.parse(raw);for(const item of j.items||[]){if(assetById(item.assetId))state.items.set(item.id,item)}}catch(_){}
+}
+function clearState(){state.items.clear();state.selected=null;state.armed=null;renderAll();saveState()}
+function showToast(msg){clearTimeout(toastTimer);toastEl.textContent=msg;toastEl.classList.add('show');toastTimer=setTimeout(()=>toastEl.classList.remove('show'),1700)}
+function uid(){return 'p_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7)}
+function clamp01(v){return Math.min(1,Math.max(0,v))}
+function planetSizePx(){return planetStage.getBoundingClientRect().width*.90}
+function planetRect(){return document.querySelector('.planetShell').getBoundingClientRect()}
+function objectSizePx(asset){return planetSizePx()*objectDiameterRatio(asset)*.90}
+function objectDiameterRatio(asset){return SIZE_RATIO[asset.sizeClass]??SIZE_RATIO.small}
+function maxOverflowFor(asset){return objectDiameterRatio(asset)*.18} // center may move by ~18% of object diameter beyond radius
+function clampPoint(x,y,asset){
+  const cx=.5,cy=.5; const dx=x-cx,dy=y-cy; const d=Math.hypot(dx,dy); const allowed=.5 + maxOverflowFor(asset)/2;
+  if(d<=allowed && x>=-.02 && y>=-.02 && x<=1.02 && y<=1.02)return {x,y};
+  const s=allowed/(d||1); return {x:cx+dx*s,y:cy+dy*s}
+}
+function screenToPlanet(clientX,clientY,asset){const r=planetRect();let x=(clientX-r.left)/r.width,y=(clientY-r.top)/r.height;return clampPoint(x,y,asset)}
+
+function hexColor(cfg,deltaL=0){return `hsl(${cfg.h} ${cfg.s}% ${Math.max(15,Math.min(82,cfg.l+deltaL))}%)`}
+function makePath(cx,cy,rx,ry,seed,rough=0.12,lobes=7){
+  const pts=[]; for(let i=0;i<lobes;i++){const a=(i/lobes)*Math.PI*2; const n=noise(seed+i*1.73); const n2=noise(seed+i*3.11+17); const rr=1+((n-.5)*2*rough)+(n2>.62?.055:0);pts.push([cx+Math.cos(a)*rx*rr,cy+Math.sin(a)*ry*(1+((noise(seed+i*5.7)-.5)*2*rough))])}
+  let d=`M ${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`; for(let i=0;i<pts.length;i++){const p=pts[i],q=pts[(i+1)%pts.length],mx=(p[0]+q[0])/2,my=(p[1]+q[1])/2; d+=` Q ${p[0].toFixed(1)} ${p[1].toFixed(1)} ${mx.toFixed(1)} ${my.toFixed(1)}`}; return d+' Z'
+}
+function noise(x){const s=Math.sin(x*12.9898)*43758.5453;return s-Math.floor(s)}
+function hashString(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0)/4294967295}
+function affinity(a,b){const A=familyOf(a),B=familyOf(b);if(A===B)return 1;for(const set of COUSINS)if(set.has(A)&&set.has(B))return .6;return .3}
+function objectCenterNorm(item){return {x:item.x,y:item.y}}
+function neighborInfluence(item){const a=assetById(item.assetId); if(!a||!a.effectId)return 0; const base=objectDiameterRatio(a);let sum=0;for(const other of state.items.values()){if(other.id===item.id)continue;const b=assetById(other.assetId);if(!b||!b.effectId)continue;const dx=(other.x-item.x),dy=(other.y-item.y),d=Math.hypot(dx,dy);const mergeRadius=1.6*base;if(d<mergeRadius)sum+=(1-d/mergeRadius)*affinity(a,b)}return Math.min(sum,2.5)}
+function liquidRadius(item){const a=assetById(item.assetId);if(!a||!a.effectId)return 0;const base=objectDiameterRatio(a);const tier=TIER_FOOTPRINT[a.tier]||1;const influence=neighborInfluence(item);const growth=Math.min(influence*.35,.60);return .50*base*tier*(1+growth)}
+function pathGeometry(item,variant=0){const a=assetById(item.assetId),cfg=effectCfg(a);const r=liquidRadius(item),seed=hashString(item.id)+(variant?83.2:0);let rx=r*(1+(hashString(item.id+'rx')-.5)*.20);let ry=r*.74*(1+(hashString(item.id+'ry')-.5)*.18);let lobes=cfg.family==='BERRY'?6:cfg.family==='MAGIC POTION'?8:7;if(cfg.family==='MATCHA'||cfg.family==='CHOCOLATE')lobes=8;const x=item.x*1000,y=item.y*1000;return makePath(x,y,rx*1000,ry*1000,seed,.11+(variant?.05:0),lobes)}
+function setGradient(gId,cfg){let g=el(gId);if(!g){g=document.createElementNS(SVG_NS,'radialGradient');g.id=gId;g.setAttribute('cx','35%');g.setAttribute('cy','30%');g.setAttribute('r','80%');const stops=[[0,0.78],[.45,.65],[.78,cfg.a*.75],[1,.02]];stops.forEach(([o,op])=>{const st=document.createElementNS(SVG_NS,'stop');st.setAttribute('offset',o);st.setAttribute('stop-color',hexColor(cfg));st.setAttribute('stop-opacity',op);g.appendChild(st)});surfaceSvg.prepend(g)}return `url(#${gId})`}
+function addSvg(tag,attrs,parent=surfaceSvg){const n=document.createElementNS(SVG_NS,tag);for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);parent.appendChild(n);return n}
+function renderLiquid(item,animateSpawn=true){
+  const a=assetById(item.assetId); if(!a||!a.effectId)return null;const cfg=effectCfg(a);const g=addSvg('g',{class:`liquidPatch tier-${a.tier.replace(/\s+/g,'-').toLowerCase()} motion-${cfg.motion}`, 'data-id':item.id});
+  const gradId='grad_'+item.id; const fill=setGradient(gradId,cfg);
+  const p1=addSvg('path',{d:pathGeometry(item,0),fill},g),p2=addSvg('path',{d:pathGeometry(item,1),fill,opacity:.42},g);p2.classList.add('patchMorph');
+  if(a.tier!=='Basic'){
+    const sheen=addSvg('ellipse',{cx:item.x*1000-r*10,cy:item.y*1000-r*15,rx:Math.max(12,liquidRadius(item)*1000*.28),ry:Math.max(8,liquidRadius(item)*1000*.12),fill:'#fff',opacity:'.11'},g);sheen.classList.add('sheen');
+  }
+  addSecondary(g,item,a,cfg);
+  if(animateSpawn)spawnRipple(item,cfg);
+  item.liquid={g,p1,p2};return g
+}
+function currentR(item){return liquidRadius(item)*1000}
+function addSecondary(g,item,a,cfg){const x=item.x*1000,y=item.y*1000,r=currentR(item); if(cfg.secondary==='bubbles'||cfg.secondary==='fizz'||cfg.secondary==='rings'||cfg.secondary==='motes'||cfg.secondary==='glints'){
+  for(let i=0;i<3;i++){const c=addSvg('circle',{cx:(x-r*.15+i*r*.18).toFixed(1),cy:(y-r*.12-i*r*.05).toFixed(1),r:Math.max(2,r*.045),fill:'#fff',opacity:a.tier==='Legendary'?'.24':'.15'},g);c.classList.add('particle',cfg.secondary)}
+ }}
+function spawnRipple(item,cfg){const x=item.x*1000,y=item.y*1000;const ring=addSvg('circle',{cx:x,cy:y,r:18,fill:'none',stroke:hexColor(cfg), 'stroke-opacity':'.42','stroke-width':'7'},surfaceSvg);ring.classList.add('spawnRipple');setTimeout(()=>ring.remove(),650)}
+function refreshLiquidFor(idList=null){const ids=idList?new Set(idList):null;for(const item of state.items.values()){if(!item.liquid)continue;if(ids&&!ids.has(item.id))continue;const a=assetById(item.assetId);if(!a||!a.effectId)continue;item.liquid.p1.setAttribute('d',pathGeometry(item,0));item.liquid.p2.setAttribute('d',pathGeometry(item,1));const grad=surfaceSvg.querySelector('#grad_'+item.id);if(grad){} const sheen=item.liquid.g.querySelector('.sheen');if(sheen){const r=currentR(item);sheen.setAttribute('cx',(item.x*1000-r*.1).toFixed(1));sheen.setAttribute('cy',(item.y*1000-r*.18).toFixed(1));}}
+}
+function rebuildLiquid(){surfaceSvg.querySelectorAll('.liquidPatch,.spawnRipple').forEach(n=>n.remove());for(const item of state.items.values()){item.liquid=null;renderLiquid(item,false)} applyDensityMode();}
+
+function applyDensityMode(){const n=state.items.size;const prev=state.densityMode;let mode=prev;if(prev==='full'){if(n>=21)mode='reduced'}else if(prev==='reduced'){if(n<=18)mode='full';else if(n>=51)mode='minimal'}else if(prev==='minimal'){if(n<=45)mode=n>=21?'reduced':'full'}state.densityMode=mode;surfaceSvg.dataset.density=mode;devMeta.textContent=`State: ${state.manifest.source} · Liquid: ${n?'active':'idle'} · Density: ${mode}`}
+function updateStatus(){statusText.textContent=`${state.items.size} object${state.items.size===1?'':'s'}`;applyDensityMode()}
+function spawnObject(asset,x,y,rotation=0,opts={save:true,animate:true}){
+  const p=clampPoint(x,y,asset); const item={id:uid(),assetId:asset.id,family:asset.family,tier:asset.tier,sizeClass:asset.sizeClass,effectId:asset.effectId,x:p.x,y:p.y,rotation:rotation};state.items.set(item.id,item);renderObject(item,opts.animate!==false);if(asset.effectId)renderLiquid(item,opts.animate!==false);updateStatus();if(opts.save!==false)saveState();return item}
+function renderObject(item,pop=true){const a=assetById(item.assetId);const anchor=document.createElement('div');anchor.className='object-anchor';anchor.style.left=(item.x*100)+'%';anchor.style.top=(item.y*100)+'%';anchor.dataset.id=item.id;
+ const rot=document.createElement('div');rot.className='object-rot';rot.style.setProperty('--rot',item.rotation+'deg');
+ const anim=document.createElement('div');anim.className='object-anim';const size=objectDiameterRatio(a)*100;anim.style.setProperty('--size', objectSizePx(a)+'px');anim.dataset.id=item.id;anim.setAttribute('aria-label',a.label);
+ const img=document.createElement('img');img.src='assets/liquid/'+a.filename;img.alt='';img.draggable=false;img.onerror=()=>{img.remove();const ph=document.createElement('div');ph.className='placeholder';const cfg=effectCfg(a);ph.style.setProperty('--c1',hexColor(cfg,10));ph.style.setProperty('--c2',hexColor(cfg,-8));ph.textContent=a.family.slice(0,2);anim.appendChild(ph)};anim.appendChild(img);
+ anim.addEventListener('pointerdown',onObjectPointerDown);anim.addEventListener('click',e=>e.stopPropagation());rot.appendChild(anim);anchor.appendChild(rot);objectLayer.appendChild(anchor);item.dom={anchor,rot,anim,img};if(pop){anim.animate([{transform:'scale(.72)',opacity:.1},{transform:'scale(1.05)',opacity:1},{transform:'scale(1)',opacity:1}],{duration:380,easing:'cubic-bezier(.2,.9,.2,1)'});}if(state.selected===item.id)anim.classList.add('selected')}
+function setSelected(id){if(state.selected&&state.items.get(state.selected)?.dom)state.items.get(state.selected).dom.anim.classList.remove('selected');state.selected=id;if(id&&state.items.get(id)?.dom)state.items.get(id).dom.anim.classList.add('selected')}
+function rotateItem(item){item.rotation=(item.rotation+15)%360;item.dom.rot.style.setProperty('--rot',item.rotation+'deg');setSelected(item.id);item.dom.anim.animate([{transform:'scale(1)'},{transform:'scale(1.08)'},{transform:'scale(1)'}],{duration:170,easing:'ease-out'});saveState()}
+function onObjectPointerDown(e){e.stopPropagation();e.preventDefault();const id=e.currentTarget.dataset.id,item=state.items.get(id);if(!item)return;setSelected(id);state.drag={id,startX:e.clientX,startY:e.clientY,lastX:e.clientX,lastY:e.clientY,moved:false};e.currentTarget.setPointerCapture?.(e.pointerId);}
+function onObjectPointerMove(e){if(!state.drag)return;const item=state.items.get(state.drag.id);if(!item)return;const dx=e.clientX-state.drag.startX,dy=e.clientY-state.drag.startY;if(Math.hypot(dx,dy)>6)state.drag.moved=true;const p=screenToPlanet(e.clientX,e.clientY,assetById(item.assetId));item.x=p.x;item.y=p.y;item.dom.anchor.style.left=(item.x*100)+'%';item.dom.anchor.style.top=(item.y*100)+'%';if(item.liquid){refreshLiquidFor([item.id,...nearestIds(item,3)])}state.drag.lastX=e.clientX;state.drag.lastY=e.clientY;}
+function nearestIds(item,max=5){const arr=[];for(const o of state.items.values()){if(o.id===item.id)continue;arr.push([Math.hypot(o.x-item.x,o.y-item.y),o.id])}arr.sort((a,b)=>a[0]-b[0]);return arr.slice(0,max).map(v=>v[1])}
+function onObjectPointerUp(e){if(!state.drag)return;const d=state.drag;const item=state.items.get(d.id);state.drag=null;if(!item)return;if(!d.moved)rotateItem(item);else {refreshLiquidFor([item.id,...nearestIds(item,5)]);saveState()}e.currentTarget.releasePointerCapture?.(e.pointerId)}
+objectLayer.addEventListener('pointermove',onObjectPointerMove);objectLayer.addEventListener('pointerup',onObjectPointerUp);objectLayer.addEventListener('pointercancel',()=>{state.drag=null});
+planetStage.addEventListener('pointerdown',e=>{if(e.target.closest('.object-anim'))return;if(!state.armed)return;const asset=assetById(state.armed);if(!asset)return;const p=screenToPlanet(e.clientX,e.clientY,asset);spawnObject(asset,p.x,p.y,0,{save:true,animate:true});state.armed=null;document.querySelectorAll('.card.armed').forEach(n=>n.classList.remove('armed'));showToast('Placed once ✓')});
+function renderAll(){objectLayer.innerHTML='';for(const item of state.items.values())renderObject(item,false);rebuildLiquid();updateStatus()}
+function selectAsset(id){if(state.armed===id){state.armed=null}else{state.armed=id;setSelected(null)}document.querySelectorAll('.card').forEach(c=>c.classList.toggle('armed',c.dataset.id===state.armed));if(state.armed)showToast('Tap the planet to place once')}
+function renderCards(filter='ALL'){
+  cardsEl.innerHTML='';const list=assets.filter(a=>{if(filter==='FREE')return normalizePrice(a.priceLabel)==='FREE';if(filter==='PREMIUM')return ['Premium Entry','Premium'].includes(a.tier);if(filter==='LEGENDARY')return a.tier==='Legendary';return true});countText.textContent=`${list.length} assets`;
+  for(const a of list){const b=document.createElement('button');b.className='card';b.dataset.id=a.id;b.type='button';b.innerHTML=`<div class="thumb"><img src="assets/liquid/${a.filename}" alt="" onerror="this.style.display='none'"></div><div class="cardMeta"><div class="cardName">${escapeHtml(a.label)}</div><div class="cardSub">${escapeHtml(a.family)}</div><div class="chips"><span class="chip tier">${escapeHtml(a.tier)}</span><span class="chip">${escapeHtml(a.priceLabel)}</span></div></div>`;b.addEventListener('click',()=>selectAsset(a.id));cardsEl.appendChild(b)} }
+function escapeHtml(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+
+document.querySelectorAll('#tabs button').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('#tabs button').forEach(x=>x.classList.remove('active'));btn.classList.add('active');renderCards(btn.dataset.filter)}));
+el('devToggle').addEventListener('click',()=>el('devPanel').classList.toggle('open'));
+document.querySelectorAll('[data-preset]').forEach(btn=>btn.addEventListener('click',()=>runPreset(btn.dataset.preset)));
+function presetPositions(n){const arr=[];for(let i=0;i<n;i++){const a=i*2.399963;const rr=.11+.29*((i+.7)/n);arr.push({x:.5+Math.cos(a)*rr,y:.5+Math.sin(a)*rr})}return arr}
+function mixedAsset(i){const ids=['MCH-002','MTB-002','BSD-002','LEM-002','STM-002','CHO-002','BER-002','POT-001','MW-001','SOD-002'];return assetById(ids[i%ids.length])}
+function runPreset(kind){clearState();const points=presetPositions(kind==='density'?60:Number(kind==='5'?5:kind==='10'?10:kind==='20m'||kind==='20x'?20:1));if(kind==='20m'){const a=assetById('MCH-003')||assets.find(x=>x.family==='MATCHA'&&x.effectId);points.forEach(p=>spawnObject(a,p.x,p.y,Math.round(Math.random()*23)*15,{save:false,animate:false}))}else if(kind==='20x'){points.forEach((p,i)=>{const a=mixedAsset(i)||assets[i%assets.length];spawnObject(a,p.x,p.y,(i%7)*15,{save:false,animate:false})})}else if(kind==='edge'){const a=assetById('MCH-004')||assets[0];[[.08,.5],[.92,.5],[.5,.08],[.5,.92]].forEach(([x,y],i)=>spawnObject(a,x,y,i*15,{save:false,animate:false}))}else if(kind==='rotate'){spawnObject(assetById('MCH-004')||assets[0],.5,.5,30,{save:false,animate:false})}else if(kind==='drag'){spawnObject(assetById('MCH-003')||assets[0],.5,.5,0,{save:false,animate:false})}else{const a=assetById('MCH-002')||assets.find(x=>x.effectId);points.slice(0,points.length).forEach((p,i)=>spawnObject(a,p.x,p.y,(i%12)*15,{save:false,animate:false}))}
+ if(kind==='badmanifest'){manifestOffline=true;state.manifest.source='embedded';showToast('Simulated offline manifest')} else if(kind==='resetstate'){localStorage.removeItem(STORAGE_KEY);showToast('Saved state cleared')}
+ rebuildLiquid();updateStatus();
+ if(kind==='rotate'){setTimeout(()=>{const i=[...state.items.values()][0];rotateItem(i)},300)}
+ if(kind==='drag'){showToast('Drag the center object around')} saveState();
+}
+
+window.addEventListener('resize',()=>{for(const item of state.items.values()){if(item.dom){item.dom.anim.style.setProperty('--size',objectSizePx(assetById(item.assetId))+'px')}}});
+
+// lightweight runtime motion engine; no per-patch RAF loops
+let motionT=0,last=performance.now();
+function tick(now){const dt=Math.min(50,now-last);last=now;motionT+=dt;const t=motionT/1000;const mode=state.densityMode;surfaceSvg.querySelectorAll('.liquidPatch').forEach((g,i)=>{const item=state.items.get(g.dataset.id);if(!item)return;const a=assetById(item.assetId),cfg=effectCfg(a);let s=.006*TIER_FLOW[a.tier||'Basic'];if(cfg.motion==='spiral')s=.018;else if(cfg.motion==='ganache')s=.010;else if(cfg.motion==='fizz')s=.020;else if(cfg.motion==='arcane'||cfg.motion==='arcanePink')s=.015; if(mode==='minimal')s*=.55; const x=item.x*1000,y=item.y*1000,r=currentR(item);const phase=hashString(item.id)*6.28;const pulse=1+Math.sin(t*s*60+phase)*.018;g.style.transform=`translate(${Math.sin(t*s*16+phase)*r*.012}px ${Math.cos(t*s*13+phase)*r*.008}px) scale(${pulse})`; const p2=g.querySelector('.patchMorph'); if(p2)p2.style.opacity=mode==='minimal'?'0':String(.30+.18*(Math.sin(t*.7+phase)+1)/2);const sheen=g.querySelector('.sheen');if(sheen&&mode!=='minimal')sheen.setAttribute('opacity',String(.08+.05*(Math.sin(t*.9+phase)+1)/2));});requestAnimationFrame(tick)}requestAnimationFrame(tick);
+
+(async()=>{assets=validateAssets(EMBEDDED_MANIFEST.assets);await loadManifest();loadState();renderAll();if(manifestOffline)showToast('Offline manifest — built-in data loaded');})();
+</script>
+</body>
+</html>
